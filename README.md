@@ -8,7 +8,7 @@ This project takes the source code for Quake 4 and modifies it to create a Call 
 Goals for this project are:
 - [x] Create a desktop shortcut that automatically launches the mod
 - [ ] README.md that explains the mod and its features
-- [ ] Modified Main Menu
+- [x] Modified Main Menu
 - [ ] Modified Heads Up Display (HUD) reflecting a key feature of the mod
 - [ ] In-Game Help Screen explaing mod changes
 - [ ] Wave Based System
