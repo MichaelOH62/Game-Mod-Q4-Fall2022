@@ -9279,12 +9279,17 @@ void idPlayer::LoadDeferredModel( void ) {
 ==============
 idPlayer::Think
 
-Called every tic for each player
+ADD GAMELOCAL.TIMER FOR SPAWNING ENEMIES
+AS LONG AS THE PLAYER IS ALIVE, KEEP SPAWNING ENEMIES
+KEEP TRACK OF ENEMIES SPAWNED AND KILLED
+IF ALL ENEMIES KILLED, START A NEW WAVE
+Called every tic (1ms, 15 per frame) for each player
 ==============
 */
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
  
+	//gameLocal.Printf("Player thinking\n");
 	if ( talkingNPC ) {
 		if ( !talkingNPC.IsValid() ) {
 			talkingNPC = NULL;

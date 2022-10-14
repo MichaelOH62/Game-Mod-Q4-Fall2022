@@ -81,7 +81,7 @@ entityDef weapon_blaster
 	"chargeTime"				".8"
 	"chargeDelay"				".1"
 	"chargeGlow"				"0 .4"
-	"fireRate"					".15"
+	"fireRate"					".2"
 	"spread"					".2"
 
 //	"def_projectile"			"projectile_blaster"
@@ -129,7 +129,7 @@ entityDef weapon_blaster
 	// ---------------------------- Muzzle Flash ---------------------------------------
 
 	"mtr_flashShader"			"lights/muzzleflash"
-	"flashColor"				"0.7 0.8 1"
+	"flashColor"				"0.8 0.7 1"
 	"flashRadius"				"200"
 	"flashPointLight"			"1"
 	"flashTime"					".1"

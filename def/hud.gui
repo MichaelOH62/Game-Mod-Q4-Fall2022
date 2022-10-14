@@ -4,6 +4,8 @@ windowDef Desktop
 	visible	1
 	nocursor	1
 	menugui	0
+	)	)
+	/	2
 	definevec4	"ws_on"	1,0.5,0,1
 	definevec4	"ws_off"	0.658,0.639,0.376,0.6
 	definevec4	"ws_glowon"	0.7,0.8,0.5,1
@@ -22,7 +24,7 @@ windowDef Desktop
 	float	"hidden"	0
 	float	"deathCount"	0
 	definefloat	"showGunInfo"	1
-	definefloat	"switchLeft"	(640-((gui::weaponcount*30)-2))/2
+	definefloat	"switchLeft"	(640-((gui::weaponcount*30)-2
 
 	onInit {
 		namedEvent "updateHealth";
@@ -2357,5 +2359,29 @@ windowDef Desktop
 			set "p_exit_level::visible" "0";
 		}
 
+	}
+	windowDef wave_count
+	{
+		rect	-294,5,640,20
+		visible	1
+		forecolor	1,1,1,1
+		text	"Wave: "
+		textscale	0.25
+		font	"fonts/chain"
+		textspacing	0
+		textalign	1
+		textstyle	1
+	}
+	windowDef point_count
+	{
+		rect	-291,350,640,20
+		visible	1
+		forecolor	1,1,1,1
+		text	"Points: "
+		textscale	0.25
+		font	"fonts/chain"
+		textspacing	0
+		textalign	1
+		textstyle	1
 	}
 }
