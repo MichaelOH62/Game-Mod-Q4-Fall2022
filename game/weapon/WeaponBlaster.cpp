@@ -4,6 +4,14 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Removed the alternate fire (charge)
+-Replaced charging with full auto firing
+*/
+
 #define BLASTER_SPARM_CHARGEGLOW		6
 
 class rvWeaponBlaster : public rvWeapon {

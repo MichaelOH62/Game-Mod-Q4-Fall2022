@@ -4,6 +4,18 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Reduced base firerate
+-Added logic to increase the firerate and spread
+	as the player holds down the trigger (spin up)
+-Firerate and spread are reset to defaults
+	if the player reloads to stops holding down
+	the trigger
+*/
+
 const int HYPERBLASTER_SPARM_BATTERY = 6;
 const int HYPERBLASTER_SPIN_SPEED	 = 300;
 
@@ -29,6 +41,10 @@ protected:
 	void					SpinDown			( void );
 
 private:
+	int numRounds;
+	float baseFireRate;
+	float fireRateMult;
+	float baseSpread;
 
 	stateResult_t		State_Idle		( const stateParms_t& parms );
 	stateResult_t		State_Fire		( const stateParms_t& parms );
@@ -56,6 +72,8 @@ rvWeaponHyperblaster::Spawn
 void rvWeaponHyperblaster::Spawn ( void ) {
 	jointBatteryView = viewAnimator->GetJointHandle ( spawnArgs.GetString ( "joint_view_battery" ) );
 	spinning		 = false;
+	baseFireRate = fireRate;
+	baseSpread = spread;
 	
 	SetState ( "Raise", 0 );	
 }
@@ -228,6 +246,28 @@ stateResult_t rvWeaponHyperblaster::State_Fire ( const stateParms_t& parms ) {
 	switch ( parms.stage ) {
 		case STAGE_INIT:
 			SpinUp ( );
+			numRounds = AmmoInClip();
+			if (numRounds % 2 == 0) //Make a small firerate increase every 2 rounds fired in succession
+			{
+				fireRateMult = 5;
+				fireRate = fireRate - fireRateMult;
+			}
+			else if (numRounds % 5 == 0) //Make a large firerate increase every 5 rounds fired in succession
+			{
+				fireRateMult = 20;
+				spread = spread + 1;
+				fireRate = fireRate - fireRateMult;
+			}
+
+			if (fireRate <= 0.05) //Ensure the firerate does not become too fast
+			{
+				fireRate = 0.05;
+			}
+
+			//gameLocal.Printf("Current firerate: %d\n", fireRate);
+			//gameLocal.Printf("Number of rounds: %d\n", numRounds);
+			//gameLocal.Printf("Current spread: %f\n", spread);
+
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 			Attack ( false, 1, spread, 0, 1.0f );
 			if ( ClipSize() ) {
@@ -245,6 +285,8 @@ stateResult_t rvWeaponHyperblaster::State_Fire ( const stateParms_t& parms ) {
 			}
 			if ( (!wsfl.attack || !AmmoInClip() || wsfl.lowerWeapon) && AnimDone ( ANIMCHANNEL_ALL, 0 ) ) {
 				SetState ( "Idle", 0 );
+				fireRate = baseFireRate;
+				spread = baseSpread;
 				return SRESULT_DONE;
 			}		
 			return SRESULT_WAIT;
@@ -271,6 +313,8 @@ stateResult_t rvWeaponHyperblaster::State_Reload ( const stateParms_t& parms ) {
 			}
 			
 			SpinDown ( );
+			fireRate = baseFireRate;
+			spread = baseSpread;
 
 			viewModel->SetShaderParm ( HYPERBLASTER_SPARM_BATTERY, 0 );
 			
@@ -281,6 +325,8 @@ stateResult_t rvWeaponHyperblaster::State_Reload ( const stateParms_t& parms ) {
 		case STAGE_WAIT:
 			if ( AnimDone ( ANIMCHANNEL_ALL, 4 ) ) {
 				AddToClip ( ClipSize() );
+				fireRate = baseFireRate;
+				spread = baseSpread;
 				SetState ( "Idle", 4 );
 				return SRESULT_DONE;
 			}

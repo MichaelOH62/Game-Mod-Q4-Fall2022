@@ -129,7 +129,7 @@ entityDef weapon_blaster
 	// ---------------------------- Muzzle Flash ---------------------------------------
 
 	"mtr_flashShader"			"lights/muzzleflash"
-	"flashColor"				"0.8 0.7 1"
+	"flashColor"				"1 1 0.7"
 	"flashRadius"				"200"
 	"flashPointLight"			"1"
 	"flashTime"					".1"
@@ -313,7 +313,7 @@ entityDef projectile_blaster_charged
 entityDef damage_blaster
 {
 	"inherit"					"damage_bullet"
-	"damage"					"8"
+	"damage"					"7"
 
 	"fx_wound"					"effects/wounds/energy.fx"
 

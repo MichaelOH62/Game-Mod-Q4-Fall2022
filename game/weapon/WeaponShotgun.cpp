@@ -4,6 +4,16 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Reduced ammo capacity from 8 to 2
+	to resemble a double-barrel shotgun
+-The first shot is normal, the second shot
+	has increased pellets and increased spread
+*/
+
 const int SHOTGUN_MOD_AMMO = BIT(0);
 
 class rvWeaponShotgun : public rvWeapon {

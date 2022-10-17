@@ -4,6 +4,15 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Reduced base firerate
+-Added logic to increase firerate as the
+	magazine size decreases
+*/
+
 class rvWeaponMachinegun : public rvWeapon {
 public:
 
