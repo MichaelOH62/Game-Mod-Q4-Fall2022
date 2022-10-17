@@ -259,9 +259,9 @@ stateResult_t rvWeaponHyperblaster::State_Fire ( const stateParms_t& parms ) {
 				fireRate = fireRate - fireRateMult;
 			}
 
-			if (fireRate <= 0.05) //Ensure the firerate does not become too fast
+			if (fireRate <= 5) //Ensure the firerate does not become too fast
 			{
-				fireRate = 0.05;
+				fireRate = 5;
 			}
 
 			//gameLocal.Printf("Current firerate: %d\n", fireRate);
