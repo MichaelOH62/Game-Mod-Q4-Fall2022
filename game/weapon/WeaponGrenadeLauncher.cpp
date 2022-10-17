@@ -4,6 +4,19 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Increased spread from 0 to 1
+-Reduced clip size from 8 to 4
+-Increased muzzle kick time from 0.8 to 1
+-Increased muzzle flash time from 200 to 250
+-Modified firing functionality to fire the entire
+	clip in succession with a single click and
+	reload automatically once empty.
+
+*/
+
 class rvWeaponGrenadeLauncher : public rvWeapon {
 public:
 
@@ -20,6 +33,8 @@ public:
 #endif
 
 private:
+
+	int numRounds;
 
 	stateResult_t		State_Idle		( const stateParms_t& parms );
 	stateResult_t		State_Fire		( const stateParms_t& parms );
@@ -144,18 +159,27 @@ stateResult_t rvWeaponGrenadeLauncher::State_Fire ( const stateParms_t& parms ) 
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
-			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-			Attack ( false, 1, spread, 0, 1.0f );
-			PlayAnim ( ANIMCHANNEL_ALL, GetFireAnim(), 0 );	
+			numRounds = AmmoInClip();
+			if (numRounds > 0) //Keep firing until out of ammo
+			{
+				//gameLocal.Printf("numRounds = %d\n", numRounds);
+				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
+				Attack(false, 1, spread, 0, 1.0f);
+				PlayAnim(ANIMCHANNEL_ALL, GetFireAnim(), 0);
+			}
+			else //Out of ammo, force reload
+			{
+				SetState("Reload", 4);
+			}
 			return SRESULT_STAGE ( STAGE_WAIT );
 	
 		case STAGE_WAIT:		
 			if ( wsfl.attack && gameLocal.time >= nextAttackTime && AmmoInClip() && !wsfl.lowerWeapon ) {
-				SetState ( "Fire", 0 );
+				SetState("Fire", 0);
 				return SRESULT_DONE;
 			}
 			if ( AnimDone ( ANIMCHANNEL_ALL, 0 ) ) {
-				SetState ( "Idle", 0 );
+				SetState ( "Fire", 0 ); //After firing anim stops, fire again
 				return SRESULT_DONE;
 			}		
 			return SRESULT_WAIT;
