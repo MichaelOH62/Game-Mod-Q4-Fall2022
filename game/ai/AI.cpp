@@ -3684,6 +3684,8 @@ void idAI::OnDeath( void ){
 
 	ExecScriptFunction( funcs.death );
 
+	//ENEMIES CAN DROP ITEMS HERE
+
 /* DONT DROP ANYTHING FOR NOW
 	float rVal = gameLocal.random.RandomInt( 100 );
 

@@ -6,6 +6,18 @@
 #include "../client/ClientEffect.h"
 #include "../Projectile.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base firerate
+-Increased base spread
+-Added logic to increase the firerate and reduce 
+	spread as the player holds down the trigger (spin up)
+-Firerate and spread are reset to defaults
+	if the player reloads to stops holding down
+	the trigger
+*/
+
 // Available drum speeds
 const int NAILGUN_DRUMSPEED_STOPPED		= 0;
 const int NAILGUN_DRUMSPEED_SLOW		= 1;
@@ -65,6 +77,11 @@ protected:
 	virtual void		OnLaunchProjectile		( idProjectile* proj );
 	
 private:
+
+	int numRounds;
+	float baseFireRate;
+	float fireRateMult;
+	float baseSpread;
 
 	void				UpdateGuideStatus		( float range = 0.0f );
 	void				CancelGuide				( void );	
@@ -131,6 +148,9 @@ void rvWeaponNailgun::Spawn ( void ) {
 	drumSpeed		= NAILGUN_DRUMSPEED_STOPPED;
 	drumSpeedIdeal	= drumSpeed;
 	drumMultiplier	= spawnArgs.GetFloat ( "drumSpeed" );
+
+	baseFireRate = fireRate;
+	baseSpread = spread;
 	
 	ExecuteState ( "ClaspClose" );	
 	SetState ( "Raise", 0 );	
@@ -666,6 +686,28 @@ stateResult_t rvWeaponNailgun::State_Fire( const stateParms_t& parms ) {
 				PlayCycle ( ANIMCHANNEL_LEGS, "fire_slow", 4 );
 			}
 
+			numRounds = AmmoInClip();
+			if (numRounds % 2 == 0) //Make a small firerate increase every 2 rounds fired in succession
+			{
+				fireRateMult = 5;
+				fireRate = fireRate - fireRateMult;
+			}
+			else if (numRounds % 5 == 0) //Make a large firerate increase every 5 rounds fired in succession
+			{
+				fireRateMult = 15;
+				spread = spread - 2;
+				fireRate = fireRate - fireRateMult;
+			}
+
+			if (fireRate <= 5) //Ensure the firerate does not become too fast
+			{
+				fireRate = 5;
+			}
+
+			//gameLocal.Printf("Current firerate: %d\n", fireRate);
+			//gameLocal.Printf("Number of rounds: %d\n", numRounds);
+			//gameLocal.Printf("Current spread: %f\n", spread);
+
 			if ( wsfl.zoom ) {				
 				Attack ( true, 1, spread, 0.0f, 1.0f );
 				nextAttackTime = gameLocal.time + (altFireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
@@ -700,8 +742,12 @@ stateResult_t rvWeaponNailgun::State_Fire( const stateParms_t& parms ) {
 			DrumSpin ( NAILGUN_DRUMSPEED_SLOW, 4 );
 			if ( !wsfl.attack && !AmmoInClip() && AmmoAvailable() && AutoReload ( ) && !wsfl.lowerWeapon ) {
 				PostState ( "Reload", 4 );
+				fireRate = baseFireRate;
+				spread = baseSpread;
 			} else {
 				PostState ( "Idle", 4 );
+				fireRate = baseFireRate;
+				spread = baseSpread;
 			}
 			return SRESULT_DONE;
 			
@@ -738,6 +784,9 @@ stateResult_t rvWeaponNailgun::State_Reload ( const stateParms_t& parms ) {
 				return SRESULT_DONE;
 			}
 
+			fireRate = baseFireRate;
+			spread = baseSpread;
+
 			SetStatus ( WP_RELOAD );
 
 			if ( wsfl.netReload ) {
@@ -758,6 +807,8 @@ stateResult_t rvWeaponNailgun::State_Reload ( const stateParms_t& parms ) {
 		case STAGE_RELOADWAIT:
 			if ( AnimDone ( ANIMCHANNEL_LEGS, 4 ) ) {
 				AddToClip( ClipSize ( ) );
+				fireRate = baseFireRate;
+				spread = baseSpread;
 				SetState ( "Idle", 4 );
 				return SRESULT_DONE;
 			}

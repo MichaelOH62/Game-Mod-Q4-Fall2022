@@ -5,6 +5,17 @@
 #include "../Weapon.h"
 #include "../Projectile.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Modified to behave like the thundergun from CoD
+-Changes include increased projectile fly speed,
+	increased splash knockback and radius, mag size
+	changed to 2.
+-Also, added logic to generate a random color for the
+	firing flash each time the weapon is fired.
+*/
+
 class rvWeaponDarkMatterGun : public rvWeapon {
 public:
 
@@ -51,6 +62,7 @@ protected:
 	void				StopRings		( void );
 
 private:
+	idVec3 flashColor;
 
 	stateResult_t		State_Idle		( const stateParms_t& parms );
 	stateResult_t		State_Fire		( const stateParms_t& parms );
@@ -100,6 +112,8 @@ void rvWeaponDarkMatterGun::Spawn ( void ) {
 	chargeDuration = SEC2MS ( spawnArgs.GetFloat ( "chargeDuration", ".5" ) );
 	
 	jointCore = viewModel->GetAnimator()->GetJointHandle ( spawnArgs.GetString ( "joint_core" ) );
+
+	flashColor = spawnArgs.GetVector("flashColor");
 }
 
 /*
@@ -313,6 +327,15 @@ stateResult_t rvWeaponDarkMatterGun::State_Fire ( const stateParms_t& parms ) {
 		case STAGE_INIT:
 			StopRings ( );
 
+			//Generate a random color for the flash each time it is fired
+			flashColor[0] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			flashColor[1] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			flashColor[2] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			spawnArgs.SetVector("flashColor", flashColor);
+			InitLights();
+
+			//gameLocal.Printf("The flash colors are: (%f,%f,%f)\n\n", flashColor[0], flashColor[1], flashColor[2]);
+
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 			Attack ( false, 1, spread, 0, 1.0f );
 			PlayAnim ( ANIMCHANNEL_ALL, "fire", 0 );	
@@ -427,9 +450,9 @@ rvDarkMatterProjectile::~rvDarkMatterProjectile ( void ) {
 rvDarkMatterProjectile::Spawn
 ================
 */
-void rvDarkMatterProjectile::Spawn ( void ) {
-	nextDamageTime  = 0;
-	radiusDamageDef = gameLocal.FindEntityDefDict ( spawnArgs.GetString ( "def_radius_damage" ) );
+void rvDarkMatterProjectile::Spawn(void) {
+	nextDamageTime = 0;
+	radiusDamageDef = gameLocal.FindEntityDefDict(spawnArgs.GetString("def_radius_damage"));
 }
 
 /*

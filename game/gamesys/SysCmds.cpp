@@ -2412,6 +2412,19 @@ static void Cmd_GameError_f( const idCmdArgs &args ) {
 	gameLocal.Error( "game error" );
 }
 
+static void Cmd_Locate_f(const idCmdArgs& args) {
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	//0 = x, 1 = y, 2 = z
+	idVec3 origin = player->GetPhysics()->GetOrigin();
+	gameLocal.Printf("Location: (%f,%f,%f)\n\n", origin[0], origin[1], origin[2]);
+}
+
 // RAVEN BEGIN
 // rjohnson: entity usage stats
 /*
@@ -3231,6 +3244,7 @@ void idGameLocal::InitConsoleCommands( void ) {
 // squirrel: Mode-agnostic buymenus
 	cmdSystem->AddCommand( "buyMenu",				Cmd_ToggleBuyMenu_f,		CMD_FL_GAME,				"Toggle buy menu (if in a buy zone and the game type supports it)" );
 	cmdSystem->AddCommand( "buy",					Cmd_BuyItem_f,				CMD_FL_GAME,				"Buy an item (if in a buy zone and the game type supports it)" );
+	cmdSystem->AddCommand("locate", Cmd_Locate_f, CMD_FL_GAME, "Print out the players location");
 // RITUAL END
 
 }

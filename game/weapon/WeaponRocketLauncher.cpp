@@ -9,6 +9,17 @@
 #include "../Projectile.h"
 #endif
 
+/*
+ZOMBIES MOD CHANGES
+
+-Increase the recoil time, recoil angles,
+	flash time, and flash radius to make the 
+	weapon appear more powerful / uncontrollable.
+-Added logic to increase the number of attacks
+	and spread of the rockets fired as the 
+	trigger is held down.
+*/
+
 class rvWeaponRocketLauncher : public rvWeapon {
 public:
 
@@ -50,6 +61,9 @@ protected:
 	bool								idleEmpty;
 
 private:
+
+	int numAttacks;
+	float baseSpread;
 
 	stateResult_t		State_Idle				( const stateParms_t& parms );
 	stateResult_t		State_Fire				( const stateParms_t& parms );
@@ -103,6 +117,9 @@ void rvWeaponRocketLauncher::Spawn ( void ) {
 	guideSpeedSlow = guideSpeedFast * f;
 	
 	reloadRate = SEC2MS ( spawnArgs.GetFloat ( "reloadRate", ".8" ) );
+
+	baseSpread = spread;
+	numAttacks = 1;
 	
 	guideAccelTime = SEC2MS ( spawnArgs.GetFloat ( "lockAccelTime", ".25" ) );
 	
@@ -445,9 +462,24 @@ stateResult_t rvWeaponRocketLauncher::State_Fire ( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
+			if (numAttacks > 3 && spread > 6)
+			{
+				//Cap these values so they do not keep growing
+				numAttacks = 3;
+				spread = 6;
+			}
+
+			//gameLocal.Printf("Current num attacks: %i\n", numAttacks);
+			//gameLocal.Printf("Current spread: %f\n", spread);
+
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));		
-			Attack ( false, 1, spread, 0, 1.0f );
-			PlayAnim ( ANIMCHANNEL_LEGS, "fire", parms.blendFrames );	
+			Attack ( false, numAttacks, spread, 0, 1.0f );
+			PlayAnim ( ANIMCHANNEL_LEGS, "fire", parms.blendFrames );
+
+			//When holding down the trigger, increase number of attacks and spread
+			numAttacks = numAttacks + 1;
+			spread = spread + 2;
+
 			return SRESULT_STAGE ( STAGE_WAIT );
 	
 		case STAGE_WAIT:			
@@ -457,6 +489,10 @@ stateResult_t rvWeaponRocketLauncher::State_Fire ( const stateParms_t& parms ) {
 			}
 			if ( gameLocal.time > nextAttackTime && AnimDone ( ANIMCHANNEL_LEGS, 4 ) ) {
 				SetState ( "Idle", 4 );
+				//Reset numAttacks, spread, and reloadRate to defaults
+				numAttacks = 1;
+				spread = baseSpread;
+				reloadRate = reloadRate;
 				return SRESULT_DONE;
 			}
 			return SRESULT_WAIT;

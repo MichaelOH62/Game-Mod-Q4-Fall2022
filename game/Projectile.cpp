@@ -267,6 +267,7 @@ void idProjectile::Create( idEntity* _owner, const idVec3 &start, const idVec3 &
 		renderLight.lightRadius[1] =
 		renderLight.lightRadius[2] = spawnArgs.GetFloat( "light_radius" );
 		spawnArgs.GetVector( "light_color", "1 1 1", light_color );
+		//gameLocal.Printf("Owner: ", owner->GetClassname());
 		renderLight.shaderParms[0] = light_color[0];
 		renderLight.shaderParms[1] = light_color[1];
 		renderLight.shaderParms[2] = light_color[2];

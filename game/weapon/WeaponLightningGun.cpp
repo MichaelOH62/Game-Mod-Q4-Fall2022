@@ -6,6 +6,16 @@
 #include "../client/ClientEffect.h"
 #include "../Projectile.h"
 #include "../ai/AI_Manager.h"
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base fireRate
+-Reduced base range
+-Added logic to build the beam as it fires and
+	increase fireRate, spread, and power once the
+	fireRate is at it's fastest
+*/
+
 
 const int	LIGHTNINGGUN_NUM_TUBES	=	3;
 const int	LIGHTNINGGUN_MAX_PATHS  =	3;
@@ -64,6 +74,8 @@ protected:
 	int									nextCrawlTime;
 
 	float								range;
+	float newRange;
+	float rangeInc;
 	jointHandle_t						spireJointView;
 	jointHandle_t						chestJointView;
 	
@@ -75,6 +87,9 @@ protected:
 	idVec3								chainLightningRange;
 
 private:
+
+	float newFireRate;
+	float newSpread;
 
 	void				Attack					( idEntity* ent, const idVec3& dir, float power = 1.0f );
 
@@ -140,7 +155,15 @@ void rvWeaponLightningGun::Spawn( void ) {
 	chainLightning.Clear( );
 	
 	// get hitscan range for our firing
-	range = weaponDef->dict.GetFloat( "range", "10000" );
+	range = weaponDef->dict.GetFloat("range", "10000");
+	newRange = range;
+
+	newFireRate = fireRate;
+
+	spread = weaponDef->dict.GetFloat("spread", "1");
+	newSpread = spread;
+
+    rangeInc = 10;
 
 	// Initialize tubes
 	for ( i = 0; i < LIGHTNINGGUN_NUM_TUBES; i ++ ) {
@@ -263,6 +286,10 @@ void rvWeaponLightningGun::Think ( void ) {
 
 	// If no longer firing or out of ammo then nothing to do in the think
 	if ( !wsfl.attack || !IsReady() || !AmmoAvailable() ) {
+		//Reset the values for the range, firerate, and spread
+		newRange = range;
+		newFireRate = fireRate;
+		newSpread = spread;
 		if ( trailEffectView ) {
 			trailEffectView->Stop ( );
 			trailEffectView = NULL;
@@ -279,7 +306,7 @@ void rvWeaponLightningGun::Think ( void ) {
 // jshepard: allow projectile hits
 	gameLocal.TracePoint(	owner, tr, 
 							playerViewOrigin, 
-							playerViewOrigin + playerViewAxis[0] * range, 
+							playerViewOrigin + playerViewAxis[0] * newRange, 
 							(MASK_SHOT_RENDERMODEL|CONTENTS_WATER|CONTENTS_PROJECTILE), owner );
 // RAVEN END
 	// Calculate the direction of the lightning effect using the barrel joint of the weapon
@@ -315,9 +342,29 @@ void rvWeaponLightningGun::Think ( void ) {
 		
 		dir = tr.endpos - origin;
 		dir.Normalize ( );
-		
+
 		nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 		Attack ( currentPath.target, dir, power );
+
+		//Increment the range, spread, firerate, and power when continuously firing
+		newRange = newRange + rangeInc;
+		newSpread = spread + 1;
+		newFireRate = newFireRate - 1;
+
+		if (newFireRate <= 90) //Cap the fireRate at 90 (0.9)
+		{
+			newSpread = 10;
+			newFireRate = 90;
+			power = 2.0f;
+			rangeInc = 50;
+		}
+		if (newRange >= 10000) //Cap the range at 10000
+		{
+			newRange = 10000;
+		}
+
+		//gameLocal.Printf("Current power: %f, Current fireRate: %f, Current spread: %f, Current range: %f\n", power, newFireRate, newSpread, newRange);
+
 		for ( i = 0; i < chainLightning.Num(); i ++, power *= 0.75f ) {
 			Attack ( chainLightning[i].target, chainLightning[i].normal, power );
 		}
@@ -781,6 +828,9 @@ stateResult_t rvWeaponLightningGun::State_Idle( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
+			newRange = range;
+			newFireRate = fireRate;
+			newSpread = spread;
 			SetStatus( WP_READY );
 			PlayCycle( ANIMCHANNEL_ALL, "idle", parms.blendFrames );
 			StopSound( SND_CHANNEL_BODY3, false );
@@ -862,6 +912,9 @@ stateResult_t rvWeaponLightningGun::State_Fire( const stateParms_t& parms ) {
 		case STAGE_DONEWAIT:
 			if ( AnimDone( ANIMCHANNEL_ALL, 4 ) ) {
 				SetState( "Idle", 4 );
+				range = newRange;
+				fireRate = newFireRate;
+				spread = newSpread;
 				return SRESULT_DONE;
 			}
 			if ( !wsfl.lowerWeapon && wsfl.attack && AmmoAvailable ( ) ) {

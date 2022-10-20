@@ -4,6 +4,16 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Reduced ammo capacity from 8 to 2
+	to resemble a double-barrel shotgun
+-The first shot is normal, the second shot
+	has increased pellets and increased spread
+*/
+
 const int SHOTGUN_MOD_AMMO = BIT(0);
 
 class rvWeaponShotgun : public rvWeapon {
@@ -21,6 +31,17 @@ public:
 
 protected:
 	int						hitscans;
+	int incHitscans;
+
+	float baseSpread;
+	float incSpread;
+
+	float flashTime;
+	float kickTime;
+	float incFlashTime;
+	float incKickTime;
+
+	int numRounds;
 
 private:
 
@@ -49,7 +70,11 @@ rvWeaponShotgun::Spawn
 */
 void rvWeaponShotgun::Spawn( void ) {
 	hitscans   = spawnArgs.GetFloat( "hitscans" );
-	
+	baseSpread = spawnArgs.GetFloat("spread");
+
+	incHitscans = hitscans * 1.5;
+	incSpread = spread * 2;
+
 	SetState( "Raise", 0 );	
 }
 
@@ -85,7 +110,6 @@ rvWeaponShotgun::PostSave
 */
 void rvWeaponShotgun::PostSave ( void ) {
 }
-
 
 /*
 ===============================================================================
@@ -163,8 +187,19 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
-			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-			Attack( false, hitscans, spread, 0, 1.0f );
+			numRounds = AmmoInClip();
+			if (numRounds == 1) //Increase spread and number of pellets for the last round
+			{
+				//gameLocal.Printf("Hitscans: %d, spread: %f\n", incHitscans, incSpread);
+				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
+				Attack(false, incHitscans, incSpread, 0, 1.0f);
+			}
+			else //Shotgun has two rounds loaded, defaults hitscans and spread
+			{
+				//gameLocal.Printf("Hitscans: %d, spread: %f\n", hitscans, baseSpread);
+				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
+				Attack(false, hitscans, baseSpread, 0, 1.0f);
+			}
 			PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
 			return SRESULT_STAGE( STAGE_WAIT );
 	

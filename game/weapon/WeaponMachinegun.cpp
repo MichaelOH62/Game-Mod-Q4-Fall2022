@@ -4,6 +4,15 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Reduced base damage
+-Reduced base firerate
+-Added logic to increase firerate as the
+	magazine size decreases
+*/
+
 class rvWeaponMachinegun : public rvWeapon {
 public:
 
@@ -27,6 +36,10 @@ protected:
 	void				Flashlight			( bool on );
 
 private:
+
+	int numRounds;
+	float baseFireRate;
+	float fireRateMult;
 
 	stateResult_t		State_Idle			( const stateParms_t& parms );
 	stateResult_t		State_Fire			( const stateParms_t& parms );
@@ -55,6 +68,7 @@ rvWeaponMachinegun::Spawn
 void rvWeaponMachinegun::Spawn ( void ) {
 	spreadZoom = spawnArgs.GetFloat ( "spreadZoom" );
 	fireHeld   = false;
+	baseFireRate = fireRate;
 		
 	SetState ( "Raise", 0 );	
 	
@@ -231,10 +245,16 @@ stateResult_t rvWeaponMachinegun::State_Fire ( const stateParms_t& parms ) {
 				Attack ( true, 1, spreadZoom, 0, 1.0f );
 				fireHeld = true;
 			} else {
+				//gameLocal.Printf("Current firerate: %d\n", fireRate);
+				numRounds = AmmoInClip();
+				fireRateMult = 5;
+				//gameLocal.Printf("Number of rounds: %d\n", numRounds);
+				//gameLocal.Printf("Fire Rate Mult: %f\n", fireRateMult);
+				fireRate -= fireRateMult;
 				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 				Attack ( false, 1, spread, 0, 1.0f );
 			}
-			PlayAnim ( ANIMCHANNEL_ALL, "fire", 0 );	
+			PlayAnim(ANIMCHANNEL_ALL, "fire", 0);
 			return SRESULT_STAGE ( STAGE_WAIT );
 	
 		case STAGE_WAIT:		
@@ -279,6 +299,7 @@ stateResult_t rvWeaponMachinegun::State_Reload ( const stateParms_t& parms ) {
 		case STAGE_WAIT:
 			if ( AnimDone ( ANIMCHANNEL_ALL, 4 ) ) {
 				AddToClip ( ClipSize() );
+				fireRate = baseFireRate;
 				SetState ( "Idle", 4 );
 				return SRESULT_DONE;
 			}
