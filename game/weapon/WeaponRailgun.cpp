@@ -36,7 +36,7 @@ protected:
 private:
 
 	idVec3 flashColor;
-	idVec3 lightColor;
+
 	stateResult_t		State_Idle		( const stateParms_t& parms );
 	stateResult_t		State_Fire		( const stateParms_t& parms );
 	stateResult_t		State_Reload	( const stateParms_t& parms );
@@ -204,7 +204,9 @@ stateResult_t rvWeaponRailgun::State_Fire ( const stateParms_t& parms ) {
 			flashColor[2] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			spawnArgs.SetVector("flashColor", flashColor);
 			InitLights();
-			gameLocal.Printf("The flash colors are: (%f,%f,%f)\n\n", flashColor[0], flashColor[1], flashColor[2]);
+
+			//gameLocal.Printf("The flash colors are: (%f,%f,%f)\n\n", flashColor[0], flashColor[1], flashColor[2]);
+
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 			Attack ( false, 1, spread, 0, 1.0f );
 			PlayAnim ( ANIMCHANNEL_ALL, "fire", 0 );	
