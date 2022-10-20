@@ -4,6 +4,15 @@
 #include "../Game_local.h"
 #include "../Weapon.h"
 
+/*
+ZOMBIES MOD CHANGES
+
+-Modified to behave like the ray gun from CoD
+-Changes include increased magazine capacity and fire rate
+-Also, added logic to generate a random color for the 
+	firing flash each time the weapon is fired.
+*/
+
 const idEventDef EV_Railgun_RestoreHum( "<railgunRestoreHum>", "" );
 
 class rvWeaponRailgun : public rvWeapon {
@@ -26,6 +35,8 @@ protected:
 
 private:
 
+	idVec3 flashColor;
+	idVec3 lightColor;
 	stateResult_t		State_Idle		( const stateParms_t& parms );
 	stateResult_t		State_Fire		( const stateParms_t& parms );
 	stateResult_t		State_Reload	( const stateParms_t& parms );
@@ -54,6 +65,7 @@ rvWeaponRailgun::Spawn
 */
 void rvWeaponRailgun::Spawn ( void ) {
 	SetState ( "Raise", 0 );	
+	flashColor = spawnArgs.GetVector("flashColor");
 }
 
 /*
@@ -186,6 +198,13 @@ stateResult_t rvWeaponRailgun::State_Fire ( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
+			//Generate a random color for the flash each time it is fired
+			flashColor[0] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			flashColor[1] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			flashColor[2] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			spawnArgs.SetVector("flashColor", flashColor);
+			InitLights();
+			gameLocal.Printf("The flash colors are: (%f,%f,%f)\n\n", flashColor[0], flashColor[1], flashColor[2]);
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 			Attack ( false, 1, spread, 0, 1.0f );
 			PlayAnim ( ANIMCHANNEL_ALL, "fire", 0 );	

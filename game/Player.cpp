@@ -3544,6 +3544,7 @@ void idPlayer::UpdateHudWeapon( int displayWeapon ) {
 		cursor->HandleNamedEvent( "weaponChange" );
 	}
 
+	//Update the HUD like this, look at hud.gui
 	hud->HandleNamedEvent( "weaponChange" );
 	hud->StateChanged( gameLocal.time ); 			
 	weaponChangeIconsUp = true;
