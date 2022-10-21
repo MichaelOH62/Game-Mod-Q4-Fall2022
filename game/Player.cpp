@@ -1809,7 +1809,14 @@ void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
 
-	numEnemies = 0;
+	numZombies = 0;
+
+	newWaveTime = 197000; //First wave start time
+	waveStart = true;
+	waveEnd = false;
+	waveCount = 0;
+
+	points = 0;
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -9291,12 +9298,6 @@ Called every tic (1ms, 15 per frame) for each player
 */
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
-
-	/*New Vars for Spawning Enemies*/
-	const char* key, * value;
-	float		yaw;
-	idVec3		org;
-	idDict		dict;
  
 	//gameLocal.Printf("Player thinking\n");
 	if ( talkingNPC ) {
@@ -9658,34 +9659,75 @@ void idPlayer::Think( void ) {
 
 	inBuyZonePrev = false;
 
-	//Start spawning
-	if ((gameLocal.GetTime() > 195000) && numEnemies == 0)
+	/*
+		TODO:
+		-Start first wave after approx. 7 seconds of spawning in (done)
+		-Create a list of possible spawn locations
+		-Lock the player in the start room
+		-When a zombie dies, decrease numZombies (done)
+		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
+		-As wave number increases, number of enemies to spawn and their difficulty increases
+		-Update the wave number in the HUD
+		-When zombie takes damage, update the player's point total
+	*/
+
+	//Start the first wave and all subsequent waves
+	if ((gameLocal.GetTime() > newWaveTime) && waveStart)
 	{
-		//gameLocal.Printf("Here, Current Time: %d\n", gameLocal.GetTime());
+		waveStart = false;
+		StartWave();
+	}
+	else if (numZombies == 0 && waveEnd) //Handle waiting 10 seconds before a new wave
+	{
+		waveStart = true;
+		waveEnd = false;
+		newWaveTime = gameLocal.GetTime() + 10000;
+	}
+}
 
-		gameLocal.Printf("There are: %d enemies\n", numEnemies);
+//Function for starting a new wave
+void idPlayer::StartWave() {
+	waveCount += 1;
+	//gameLocal.Printf("Current Wave: %d\n", waveCount);
+	numZombiesToSpawn = 5;
 
-		if (numEnemies < 1)
-		{
-			gameLocal.Printf("Inside Enemy If\n");
-			numEnemies += 1;
-			
-			yaw = viewAngles.yaw;
+	//Loop to spawn in all of the zombies
+	for (int i = 0; i < numZombiesToSpawn; i++)
+	{
+		SpawnZombie();
+	}
+	if (numZombies == numZombiesToSpawn) //This can be commented out once working
+	{
+		//gameLocal.Printf("All zombies spawned, numZombies = %d.\n", numZombies);
+		numZombiesToSpawn = 0;
+	}
+}
 
-			value = "monster_slimy_transfer";
-			dict.Set("classname", value);
-			dict.Set("angle", va("%f", yaw + 180));
+//Function for spawning a new wave of zombies
+void idPlayer::SpawnZombie() {
+	/*New Vars for Spawning Enemies*/
+	const char* key, * value;
+	float		yaw;
+	idVec3		org;
+	idDict		dict;
 
-			org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 80 + idVec3(0, 0, 1);
-			dict.Set("origin", org.ToString());
+	numZombies += 1;
 
-			idEntity* newEnt = NULL;
-			gameLocal.SpawnEntityDef(dict, &newEnt);
+	yaw = viewAngles.yaw;
 
-			if (newEnt) {
-				gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
-			}
-		}
+	value = "monster_slimy_transfer";
+	dict.Set("classname", value);
+	dict.Set("angle", va("%f", yaw + 180));
+
+	//Set up random spawn origins here
+	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 80 + idVec3(0, 0, 1);
+	dict.Set("origin", org.ToString());
+
+	idEntity* newEnt = NULL;
+	gameLocal.SpawnEntityDef(dict, &newEnt);
+
+	if (newEnt) {
+		//gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 	}
 }
 

@@ -119,7 +119,11 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		return;
 	}
 
-	player->numEnemies -= 1;
+	player->numZombies -= 1;
+	if (player->numZombies == 0)
+	{
+		player->waveEnd = true;
+	}
 
 	StopEffect ( "fx_vomit_muzzle" );
 	idAI::OnDeath ( );
