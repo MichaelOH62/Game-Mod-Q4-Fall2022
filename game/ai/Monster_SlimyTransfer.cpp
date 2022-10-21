@@ -111,6 +111,16 @@ rvMonsterSlimyTransfer::OnDeath
 ================
 */
 void rvMonsterSlimyTransfer::OnDeath ( void ) {
+	//When Zombie dies, decrement the number of enemies spawned
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	player->numEnemies -= 1;
+
 	StopEffect ( "fx_vomit_muzzle" );
 	idAI::OnDeath ( );
 }

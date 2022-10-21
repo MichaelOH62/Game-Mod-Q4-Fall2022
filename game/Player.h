@@ -425,6 +425,8 @@ public:
 	float					buyMenuCash;
 // RITUAL END
 
+	int numEnemies;
+
 public:
 	CLASS_PROTOTYPE( idPlayer );
 

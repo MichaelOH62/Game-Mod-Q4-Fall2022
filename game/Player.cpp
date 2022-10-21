@@ -1809,6 +1809,8 @@ void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
 
+	numEnemies = 0;
+
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
 	}
@@ -9289,6 +9291,12 @@ Called every tic (1ms, 15 per frame) for each player
 */
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
+
+	/*New Vars for Spawning Enemies*/
+	const char* key, * value;
+	float		yaw;
+	idVec3		org;
+	idDict		dict;
  
 	//gameLocal.Printf("Player thinking\n");
 	if ( talkingNPC ) {
@@ -9649,6 +9657,36 @@ void idPlayer::Think( void ) {
 		inBuyZone = false;
 
 	inBuyZonePrev = false;
+
+	//Start spawning
+	if ((gameLocal.GetTime() > 195000) && numEnemies == 0)
+	{
+		//gameLocal.Printf("Here, Current Time: %d\n", gameLocal.GetTime());
+
+		gameLocal.Printf("There are: %d enemies\n", numEnemies);
+
+		if (numEnemies < 1)
+		{
+			gameLocal.Printf("Inside Enemy If\n");
+			numEnemies += 1;
+			
+			yaw = viewAngles.yaw;
+
+			value = "monster_slimy_transfer";
+			dict.Set("classname", value);
+			dict.Set("angle", va("%f", yaw + 180));
+
+			org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 80 + idVec3(0, 0, 1);
+			dict.Set("origin", org.ToString());
+
+			idEntity* newEnt = NULL;
+			gameLocal.SpawnEntityDef(dict, &newEnt);
+
+			if (newEnt) {
+				gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
+			}
+		}
+	}
 }
 
 /*
