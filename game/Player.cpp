@@ -9721,12 +9721,10 @@ void idPlayer::SpawnZombie() {
 	dict.Set("angle", va("%f", yaw + 180));
 
 	//Generate random spawn location
-	x = rand() % (100 - 0 + 1) + 0;
-	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(x, x, x);
+	x = rand() % (150 - 0 + 1) + 0;
+	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(x, x, 1);
 
 	dict.Set("origin", org.ToString());
-
-	gameLocal.Printf("Origin: %s\n", org.ToString());
 
 	idEntity* newEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &newEnt);

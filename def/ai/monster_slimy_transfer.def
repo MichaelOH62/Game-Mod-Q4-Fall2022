@@ -150,7 +150,7 @@ entityDef damage_slimyTransfer_vomit_residual
 {
 	"inherit"					"damage_monster_base"
 	"knockback"					"0"
-	"damage"					"5"
+	"damage"					"2"
 }	
 
 entityDef damage_slimyTransfer_vomit_splash
@@ -178,7 +178,7 @@ entityDef projectile_slimyTransfer_vomit
 	"fx_impact_actor"									"effects/monsters/slimy_transfer/vomit_burst_actor.fx"
 
 	"delay_residual"									"1"
-	"residual_time"										"6"
+	"residual_time"										"3"
 	"def_residual_damage"								"damage_slimyTransfer_vomit_residual"
 }
 
@@ -197,10 +197,10 @@ entityDef monster_slimy_transfer
 
 	// --------------------------------- Actions ------------------------------------
 	"action_meleeAttack"					"1"
-	"action_vomitAttack"					"0"
+	"action_vomitAttack"					"1"
 //	"action_vomitAttack_maxrange"			"175"
-	"action_vomitAttack_maxrange"			"250"
-	"action_vomitAttack_rate"				"1.5"
+	"action_vomitAttack_maxrange"			"100"
+	"action_vomitAttack_rate"				"5"
 	"action_vomitAttack_blendFrames"		"4"
 	"action_vomitAttack_anim"				""
 	"action_vomitAttack_failrate"			"0"
@@ -225,7 +225,7 @@ entityDef monster_slimy_transfer
 	"def_attack_vomit"						"projectile_slimyTransfer_vomit"
 	"attack_vomit_accuracy"					"5"
 	"attack_vomit_lockToJoint"				"1"
-	"attack_vomit_rate"						".1"
+	"attack_vomit_rate"						".5"
 
 	"def_attack_melee"						"melee_slimyTransfer"
 
