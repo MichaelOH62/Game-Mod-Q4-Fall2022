@@ -435,9 +435,6 @@ public:
 	int newWaveTime;
 	int waveCount;
 
-	//Player's points, increases when killing zombies, decreases when purchasing items
-	int points;
-
 public:
 	CLASS_PROTOTYPE( idPlayer );
 

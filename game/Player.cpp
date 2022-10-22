@@ -1497,7 +1497,7 @@ idPlayer::Init
 */
 void idPlayer::Init( void ) {
 	const char			*value;
-	
+
 	noclip					= false;
 	godmode					= false;
 	godmodeDamage			= 0;
@@ -1817,7 +1817,7 @@ void idPlayer::Spawn( void ) {
 	waveEnd = false;
 	waveCount = 0;
 
-	points = 0;
+	buyMenuCash = 0; //Used for purchasing weapons / powerups
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -9658,21 +9658,22 @@ void idPlayer::Think( void ) {
 
 	/*
 		TODO:
-		-Set initial player health to 100 somehow
+		-Set initial player health to 100 somehow (done)
 		-Start first wave after approx. 7 seconds of spawning in (done)
-		-Create a list of possible spawn locations
+		-Create a list of possible spawn locations (done)
 		-Lock the player in the start room
 		-When a zombie dies, decrease numZombies (done)
 		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
 		-As wave number increases, number of enemies to spawn and their difficulty increases (num done)
 		-Update the wave number in the HUD
-		-When zombie takes damage, update the player's point total
+		-When zombie takes damage, update the player's point (cash) total
 	*/
 
 	//Start the first wave and all subsequent waves
 	if ((gameLocal.GetTime() > newWaveTime) && waveStart)
 	{
 		waveStart = false;
+		Event_SetHealth(100);	//At the start of every wave, restore player to full health
 		StartWave();
 	}
 	else if (numZombies == 0 && waveEnd) //Handle waiting 10 seconds before a new wave
@@ -9703,11 +9704,13 @@ void idPlayer::StartWave() {
 
 //Function for spawning a new wave of zombies
 void idPlayer::SpawnZombie() {
-	/*New Vars for Spawning Enemies*/
+	//New Vars for Spawning Enemies
 	const char* key, * value;
 	float		yaw;
 	idVec3		org;
 	idDict		dict;
+
+	int x; //Used for generating random location
 
 	numZombies += 1;
 
@@ -9717,9 +9720,13 @@ void idPlayer::SpawnZombie() {
 	dict.Set("classname", value);
 	dict.Set("angle", va("%f", yaw + 180));
 
-	//Set up random spawn origins here
-	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 80 + idVec3(0, 0, 1);
+	//Generate random spawn location
+	x = rand() % (100 - 0 + 1) + 0;
+	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(x, x, x);
+
 	dict.Set("origin", org.ToString());
+
+	gameLocal.Printf("Origin: %s\n", org.ToString());
 
 	idEntity* newEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &newEnt);

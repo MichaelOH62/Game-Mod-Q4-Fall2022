@@ -13,7 +13,6 @@ public:
 
 	void				InitSpawnArgsVariables			( void );
 	void				Spawn							( void );
-	void IncreaseStrength(void);
 	void				Save							( idSaveGame *savefile ) const;
 	void				Restore							( idRestoreGame *savefile );
 

@@ -219,7 +219,7 @@ entityDef monster_slimy_transfer
 	"chatter_combat_rate"					"8"	
 
 	// --------------------------------- Combat ----------------------------------
-	"health"								"49"
+	"health"								"50"
 	"painThreshold"							"1"
 
 	"def_attack_vomit"						"projectile_slimyTransfer_vomit"
