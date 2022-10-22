@@ -1810,6 +1810,7 @@ void idPlayer::Spawn( void ) {
 	idBounds	bounds;
 
 	numZombies = 0;
+	numZombiesToSpawn = 5; //First wave has 5 zombies
 
 	newWaveTime = 197000; //First wave start time
 	waveStart = true;
@@ -9289,10 +9290,6 @@ void idPlayer::LoadDeferredModel( void ) {
 ==============
 idPlayer::Think
 
-ADD GAMELOCAL.TIMER FOR SPAWNING ENEMIES
-AS LONG AS THE PLAYER IS ALIVE, KEEP SPAWNING ENEMIES
-KEEP TRACK OF ENEMIES SPAWNED AND KILLED
-IF ALL ENEMIES KILLED, START A NEW WAVE
 Called every tic (1ms, 15 per frame) for each player
 ==============
 */
@@ -9661,12 +9658,13 @@ void idPlayer::Think( void ) {
 
 	/*
 		TODO:
+		-Set initial player health to 100 somehow
 		-Start first wave after approx. 7 seconds of spawning in (done)
 		-Create a list of possible spawn locations
 		-Lock the player in the start room
 		-When a zombie dies, decrease numZombies (done)
 		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
-		-As wave number increases, number of enemies to spawn and their difficulty increases
+		-As wave number increases, number of enemies to spawn and their difficulty increases (num done)
 		-Update the wave number in the HUD
 		-When zombie takes damage, update the player's point total
 	*/
@@ -9689,17 +9687,17 @@ void idPlayer::Think( void ) {
 void idPlayer::StartWave() {
 	waveCount += 1;
 	//gameLocal.Printf("Current Wave: %d\n", waveCount);
-	numZombiesToSpawn = 5;
+
+	//Spawn one more zombie every 2 waves
+	if (waveCount % 2 == 0)
+	{
+		numZombiesToSpawn += 1;
+	}
 
 	//Loop to spawn in all of the zombies
 	for (int i = 0; i < numZombiesToSpawn; i++)
 	{
 		SpawnZombie();
-	}
-	if (numZombies == numZombiesToSpawn) //This can be commented out once working
-	{
-		//gameLocal.Printf("All zombies spawned, numZombies = %d.\n", numZombies);
-		numZombiesToSpawn = 0;
 	}
 }
 

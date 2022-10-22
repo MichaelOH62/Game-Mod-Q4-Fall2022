@@ -13,6 +13,7 @@ public:
 
 	void				InitSpawnArgsVariables			( void );
 	void				Spawn							( void );
+	void IncreaseStrength(void);
 	void				Save							( idSaveGame *savefile ) const;
 	void				Restore							( idRestoreGame *savefile );
 
@@ -27,6 +28,9 @@ protected:
 	int					vomitAttackRate;
 
 private:
+
+	float health;
+	int damage;
 
 	rvAIAction			actionVomitAttack;
 	

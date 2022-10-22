@@ -197,7 +197,7 @@ entityDef monster_slimy_transfer
 
 	// --------------------------------- Actions ------------------------------------
 	"action_meleeAttack"					"1"
-	"action_vomitAttack"					"1"
+	"action_vomitAttack"					"0"
 //	"action_vomitAttack_maxrange"			"175"
 	"action_vomitAttack_maxrange"			"250"
 	"action_vomitAttack_rate"				"1.5"
