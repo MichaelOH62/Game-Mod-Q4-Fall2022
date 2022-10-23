@@ -425,6 +425,16 @@ public:
 	float					buyMenuCash;
 // RITUAL END
 
+	//Variables for handling spawning in zombies
+	int numZombies;
+	int numZombiesToSpawn;
+
+	//Variables for handling the wave system
+	bool waveStart;
+	bool waveEnd;
+	int newWaveTime;
+	int waveCount;
+
 public:
 	CLASS_PROTOTYPE( idPlayer );
 
@@ -433,6 +443,11 @@ public:
 
 	void					Spawn( void );
 	void					Think( void );
+
+	//Function for starting a new wave
+	void StartWave(void);
+	//Function for spawning a new wave of zombies
+	void SpawnZombie(void);
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file

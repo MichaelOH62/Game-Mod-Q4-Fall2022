@@ -9125,7 +9125,7 @@ bool idMultiplayerGame::IsBuyingAllowedInTheCurrentGameMode( void ) {
 		return gameLocal.serverInfo.GetBool( "si_isBuyingEnabled" );
 	}
 
-	return false;
+	return true;
 }
 
 

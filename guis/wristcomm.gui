@@ -10,7 +10,6 @@ windowDef Desktop
 	onInit {
 		namedEvent "closeObjective";
 	}
-
 	onNamedEvent saveMessage {
 		set "quicksave_msg::forecolor_w" "1" ;
 		set "quicksave_msg::visible" "1" ;
@@ -23,7 +22,6 @@ windowDef Desktop
 		set "wristcomm::visible" "0";
 		set "p_failedobjective::visible" "1";
 	}
-
 	onNamedEvent newObjective {
 		localSound	"guisounds_click" ;
 		set "p_objectives::visible" "1" ;
@@ -919,7 +917,6 @@ windowDef Desktop
 		onTime 2000 {
 			transition "forecolor_w" "1" "0" "1000" ;
 		}
-
 		onTime +1000 {
 			set "quicksave_msg::visible" "0" ;
 		}
@@ -1077,7 +1074,6 @@ windowDef Desktop
 			transition "obj_ss::matcolor_w" "0" "1" "100" ;
 			transition "obj_ss::bordercolor_w" "0" "1" "100" ;
 		}
-
 	}
 	windowDef anim_compobj_in
 	{

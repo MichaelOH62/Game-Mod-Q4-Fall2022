@@ -1497,7 +1497,7 @@ idPlayer::Init
 */
 void idPlayer::Init( void ) {
 	const char			*value;
-	
+
 	noclip					= false;
 	godmode					= false;
 	godmodeDamage			= 0;
@@ -1808,6 +1808,16 @@ Prepare any resources used by the player.
 void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
+
+	numZombies = 0;
+	numZombiesToSpawn = 5; //First wave has 5 zombies
+
+	newWaveTime = 197000; //First wave start time
+	waveStart = true;
+	waveEnd = false;
+	waveCount = 0;
+
+	buyMenuCash = 0; //Used for purchasing weapons / powerups
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -9280,10 +9290,6 @@ void idPlayer::LoadDeferredModel( void ) {
 ==============
 idPlayer::Think
 
-ADD GAMELOCAL.TIMER FOR SPAWNING ENEMIES
-AS LONG AS THE PLAYER IS ALIVE, KEEP SPAWNING ENEMIES
-KEEP TRACK OF ENEMIES SPAWNED AND KILLED
-IF ALL ENEMIES KILLED, START A NEW WAVE
 Called every tic (1ms, 15 per frame) for each player
 ==============
 */
@@ -9649,6 +9655,93 @@ void idPlayer::Think( void ) {
 		inBuyZone = false;
 
 	inBuyZonePrev = false;
+
+	/*
+		TODO:
+		-Set initial player health to 100 somehow (done)
+		-Start first wave after approx. 7 seconds of spawning in (done)
+		-Create a list of possible spawn locations (done)
+		-Lock the player in the start room (done)
+		-When a zombie dies, decrease numZombies (done)
+		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
+		-As wave number increases, number of enemies to spawn (done)
+		-Update the wave number in the HUD
+		-When zombie takes damage, update the player's point (cash) total
+	*/
+
+	//Start the first wave and all subsequent waves
+	if ((gameLocal.GetTime() > newWaveTime) && waveStart)
+	{
+		waveStart = false;
+		Event_SetHealth(100);	//At the start of every wave, restore player to full health
+		StartWave();
+	}
+	else if (numZombies == 0 && waveEnd) //Handle waiting 10 seconds before a new wave
+	{
+		waveStart = true;
+		waveEnd = false;
+		newWaveTime = gameLocal.GetTime() + 10000;
+	}
+}
+
+//Function for starting a new wave
+void idPlayer::StartWave() {
+	waveCount += 1;
+	//gameLocal.Printf("Current Wave: %d\n", waveCount);
+
+	//Spawn one more zombie every 2 waves
+	if (waveCount % 2 == 0)
+	{
+		numZombiesToSpawn += 1;
+	}
+
+	//Loop to spawn in all of the zombies
+	for (int i = 0; i < numZombiesToSpawn; i++)
+	{
+		SpawnZombie();
+	}
+}
+
+//Function for spawning a new wave of zombies
+void idPlayer::SpawnZombie() {
+	//New Vars for Spawning Enemies
+	const char* key, * value;
+	float		yaw;
+	idVec3		org;
+	idDict		dict;
+
+	int r; //Used for generating random location
+
+	numZombies += 1;
+
+	yaw = viewAngles.yaw;
+
+	value = "monster_slimy_transfer";
+	dict.Set("classname", value);
+	dict.Set("angle", va("%f", yaw + 180));
+
+	//Generate random spawn location
+	r = rand() % (200 - 50 + 1) + 50;
+	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(r, r, 1);
+	if ((org[0] >= 9300 && org[0] <= 9520 && org[1] >= -6900 && org[1] <= -6500) 
+		|| (org[0] >= 10250 && org[0] <= 10350) || (org[0] >= 9630 && org[0] <= 10050))
+	{
+		//Zombie being spawned in bad location
+		//New origin is a safety spawn (should be no issues spawning here)
+		r = rand() % (15 - 0 + 1) + 0;	//Add a bit of randomness to hopefully avoid spawns on top of each other
+		org[0] = 9150.33 + r;
+		org[1] = -6995.4 + r;
+		org[2] = 2.12;
+	}
+
+	dict.Set("origin", org.ToString());
+
+	idEntity* newEnt = NULL;
+	gameLocal.SpawnEntityDef(dict, &newEnt);
+
+	if (newEnt) {
+		//gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
+	}
 }
 
 /*
