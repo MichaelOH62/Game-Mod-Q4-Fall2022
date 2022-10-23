@@ -9661,7 +9661,7 @@ void idPlayer::Think( void ) {
 		-Set initial player health to 100 somehow (done)
 		-Start first wave after approx. 7 seconds of spawning in (done)
 		-Create a list of possible spawn locations (done)
-		-Lock the player in the start room
+		-Lock the player in the start room (done)
 		-When a zombie dies, decrease numZombies (done)
 		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
 		-As wave number increases, number of enemies to spawn and their difficulty increases (num done)
@@ -9721,6 +9721,7 @@ void idPlayer::SpawnZombie() {
 	dict.Set("angle", va("%f", yaw + 180));
 
 	//Generate random spawn location
+	//Maybe add a check to ensure a zombie doesn't fall through the floor?
 	x = rand() % (150 - 0 + 1) + 0;
 	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(x, x, 1);
 
