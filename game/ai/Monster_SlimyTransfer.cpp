@@ -28,6 +28,9 @@ protected:
 
 private:
 
+	float health;
+	int damage;
+
 	rvAIAction			actionVomitAttack;
 	
 	// Torso States
@@ -111,6 +114,20 @@ rvMonsterSlimyTransfer::OnDeath
 ================
 */
 void rvMonsterSlimyTransfer::OnDeath ( void ) {
+	//When Zombie dies, decrement the number of enemies spawned
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	player->numZombies -= 1;
+	if (player->numZombies == 0)
+	{
+		player->waveEnd = true;
+	}
+
 	StopEffect ( "fx_vomit_muzzle" );
 	idAI::OnDeath ( );
 }
