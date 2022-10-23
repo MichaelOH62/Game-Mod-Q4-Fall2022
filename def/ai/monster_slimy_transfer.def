@@ -157,7 +157,7 @@ entityDef damage_slimyTransfer_vomit_splash
 {
 	"inherit"					"damage_monster_base"
 	"knockback"					"0"
-	"damage"					"1"
+	"damage"					"2"
 	"radius"					"64"
 
 	"dot_duration"				"1"
@@ -199,8 +199,8 @@ entityDef monster_slimy_transfer
 	"action_meleeAttack"					"1"
 	"action_vomitAttack"					"1"
 //	"action_vomitAttack_maxrange"			"175"
-	"action_vomitAttack_maxrange"			"100"
-	"action_vomitAttack_rate"				"5"
+	"action_vomitAttack_maxrange"			"110"
+	"action_vomitAttack_rate"				"4"
 	"action_vomitAttack_blendFrames"		"4"
 	"action_vomitAttack_anim"				""
 	"action_vomitAttack_failrate"			"0"
@@ -219,7 +219,7 @@ entityDef monster_slimy_transfer
 	"chatter_combat_rate"					"8"	
 
 	// --------------------------------- Combat ----------------------------------
-	"health"								"50"
+	"health"								"55"
 	"painThreshold"							"1"
 
 	"def_attack_vomit"						"projectile_slimyTransfer_vomit"

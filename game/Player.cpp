@@ -9664,7 +9664,7 @@ void idPlayer::Think( void ) {
 		-Lock the player in the start room (done)
 		-When a zombie dies, decrease numZombies (done)
 		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
-		-As wave number increases, number of enemies to spawn and their difficulty increases (num done)
+		-As wave number increases, number of enemies to spawn (done)
 		-Update the wave number in the HUD
 		-When zombie takes damage, update the player's point (cash) total
 	*/
@@ -9710,7 +9710,7 @@ void idPlayer::SpawnZombie() {
 	idVec3		org;
 	idDict		dict;
 
-	int x; //Used for generating random location
+	int r; //Used for generating random location
 
 	numZombies += 1;
 
@@ -9721,9 +9721,18 @@ void idPlayer::SpawnZombie() {
 	dict.Set("angle", va("%f", yaw + 180));
 
 	//Generate random spawn location
-	//Maybe add a check to ensure a zombie doesn't fall through the floor?
-	x = rand() % (150 - 0 + 1) + 0;
-	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(x, x, 1);
+	r = rand() % (200 - 50 + 1) + 50;
+	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(r, r, 1);
+	if ((org[0] >= 9300 && org[0] <= 9520 && org[1] >= -6900 && org[1] <= -6500) 
+		|| (org[0] >= 10250 && org[0] <= 10350) || (org[0] >= 9630 && org[0] <= 10050))
+	{
+		//Zombie being spawned in bad location
+		//New origin is a safety spawn (should be no issues spawning here)
+		r = rand() % (15 - 0 + 1) + 0;	//Add a bit of randomness to hopefully avoid spawns on top of each other
+		org[0] = 9150.33 + r;
+		org[1] = -6995.4 + r;
+		org[2] = 2.12;
+	}
 
 	dict.Set("origin", org.ToString());
 
