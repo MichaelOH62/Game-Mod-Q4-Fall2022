@@ -282,8 +282,8 @@ windowDef Desktop
 				rect	26,55,136,27
 				visible	1
 				forecolor	1,1,1,0
-				text	"Waves are zombies are spawning"
-				textscale	0.2
+				text	"Waves of zombies are now spawning"
+				textscale	0.20
 				font	"fonts/lowpixel"
 			}
 			windowDef obj_ss
@@ -300,7 +300,7 @@ windowDef Desktop
 				rect	26,195,148,13
 				visible	1
 				forecolor	0.850,0.905,0.749,0
-				text	"#str_200275"
+				text	"GROUP 935 115-43556-BGX7J54"
 				textscale	0.14
 				font	"fonts/marine"
 				textspacing	-1
@@ -801,7 +801,7 @@ windowDef Desktop
 					rect	26,179,308,15
 					visible	1
 					forecolor	1,1,1,0
-					text	"gui::objectivetitle1"
+					text	"PRESS B TO ACCESS THE BUY MENU"
 					textscale	0.2
 					font	"fonts/lowpixel"
 				}
@@ -819,8 +819,8 @@ windowDef Desktop
 					rect	170,195,180,100
 					visible	1
 					forecolor	0.811,0.866,0.709,0
-					text	"gui::objectivetext1"
-					textscale	0.2
+					text	"The buy menu gives you access to more powerful weapons and perks to increase your chances of surivival. Zombies will spawn in increased numbers as waves continue. Keep your distance and manage your ammunition."
+					textscale	0.19
 					font	"fonts/lowpixel"
 				}
 			}
