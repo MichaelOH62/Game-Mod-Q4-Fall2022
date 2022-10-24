@@ -29,3 +29,5 @@ Goals for this project are:
 - [ ] 5 Different Perks
 - [ ] 5 Different Drops / Item Pickups / Power Ups
 - [ ] Point Based System / Buy Menu
+  - Added a points variable for the player.
+  - Whenever the player kills a zombie, the player gains 100 points.
