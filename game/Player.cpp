@@ -1817,7 +1817,7 @@ void idPlayer::Spawn( void ) {
 	waveEnd = false;
 	waveCount = 0;
 
-	buyMenuCash = 0; //Used for purchasing weapons / powerups
+	points = 0; //Used for purchasing weapons / powerups
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -3446,6 +3446,9 @@ void idPlayer::UpdateHudStats( idUserInterface *_hud ) {
 		UpdateHudAmmo( _hud );
 	}
 	
+	_hud->SetStateInt("player_waves", waveCount);
+	_hud->SetStateInt("player_points", points);
+
 	_hud->StateChanged( gameLocal.time );
 }
 
@@ -9721,6 +9724,11 @@ void idPlayer::SpawnZombie() {
 	dict.Set("angle", va("%f", yaw + 180));
 
 	//Generate random spawn location
+	//TODO: FIX SPAWNING ISSUES
+	//		MAYBE CHANGE THE WAY THEY ARE SPAWNING TO HARD CODED LOCATIONS
+	//		BASED ON THE PLAYER'S LOCATION. LIKE IF THEY ARE ON THE LEFT HAND SIDE
+	//		OF THE SPAWN ROOM THEN HAVE 3 DIFFERENT LOCATIONS FOR EACH SIDE
+	//		AND SPAWN ZOMBIES RANDOMLY AMONGST THOSE LOCATIONS
 	r = rand() % (200 - 50 + 1) + 50;
 	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(r, r, 1);
 	if ((org[0] >= 9300 && org[0] <= 9520 && org[1] >= -6900 && org[1] <= -6500) 

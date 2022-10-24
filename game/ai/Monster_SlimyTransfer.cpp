@@ -122,8 +122,10 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		return;
 	}
 
+	player->points += 100;	//Player gets 100 points for a kill
+
 	player->numZombies -= 1;
-	if (player->numZombies == 0)
+	if (player->numZombies == 0)	//Check if that was the last zombie alive, if so end wave
 	{
 		player->waveEnd = true;
 	}
