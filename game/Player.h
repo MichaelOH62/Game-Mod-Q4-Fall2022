@@ -435,6 +435,9 @@ public:
 	int newWaveTime;
 	int waveCount;
 
+	//Variable for the player's points
+	int points;
+
 public:
 	CLASS_PROTOTYPE( idPlayer );
 

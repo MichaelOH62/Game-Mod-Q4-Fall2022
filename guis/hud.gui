@@ -2372,6 +2372,18 @@ windowDef Desktop
 		textalign	1
 		textstyle	1
 	}
+	windowDef wave_amount
+	{
+		rect	35,5,52,26
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::player_waves"
+		textscale	0.25
+		font	"fonts/chain"
+		textalign	1
+		notime	1
+		textstyle	1
+	}
 	windowDef point_count
 	{
 		rect	-291,350,640,20
@@ -2382,6 +2394,18 @@ windowDef Desktop
 		font	"fonts/chain"
 		textspacing	0
 		textalign	1
+		textstyle	1
+	}
+	windowDef point_amount
+	{
+		rect	50,350,52,26
+		visible	1
+		forecolor	1,1,1,1
+		text	"gui::player_points"
+		textscale	0.25
+		font	"fonts/chain"
+		textalign	1
+		notime	1
 		textstyle	1
 	}
 }
