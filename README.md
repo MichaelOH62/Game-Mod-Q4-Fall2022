@@ -11,14 +11,17 @@ Goals for this project are:
 - [x] Modified Main Menu
   - The main menu has been modified to fit the Zombies theme.
   - Custom "Zombies" text is displayed and various red elements have been added.
+  - See mainmenu.gui in guis
 - [x] Modified Heads Up Display (HUD) reflecting a key feature of the mod
   - The HUD has been changed with hints of red to match the changes to the main menu.
   - The HUD also displays the player's point count and which wave (number) the player is on.
   - The HUD updates as soon as either of the waveCount or points variables change.
+  - See hud.gui in guis
 - [x] In-Game Help Screen explaining mod changes
   - The Objectives GUI (wristcomm.gui) modified to explain the mod.
   - The player can press Tab in game to see the help screen.
   - The help screen gives the player advice and explains the wave system.
+  - See wristcomm.gui in guis
 - [x] Wave Based System
   - Zombies spawn into the game in waves.
   - Player is locked into the starting location.
