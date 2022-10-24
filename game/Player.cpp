@@ -1800,6 +1800,45 @@ idUserInterface* idPlayer::GetCursorGUI( void ) {
 
 /*
 ==============
+idPlayer::InitializeZombieSpawnLocations
+
+Prepare the spawn locations of zombies
+==============
+*/
+void idPlayer::InitializeZombieSpawnLocations(void) {
+	//First left location
+	spawnLocL1[0] = 9150;
+	spawnLocL1[1] = -6995;
+	spawnLocL1[2] = 2.12;
+
+	//Second left location
+	spawnLocL2[0] = 9205;
+	spawnLocL2[1] = -6514;
+	spawnLocL2[2] = 4.86;
+
+	//Third left location
+	spawnLocL3[0] = 9500;
+	spawnLocL3[1] = -7118;
+	spawnLocL3[2] = 0.45;
+
+	//First right location
+	spawnLocR1[0] = 10389;
+	spawnLocR1[1] = -6417;
+	spawnLocR1[2] = 1.25;
+
+	//Second right location
+	spawnLocR2[0] = 10968;
+	spawnLocR2[1] = -6907;
+	spawnLocR2[2] = 7.70;
+
+	//Third right location
+	spawnLocR3[0] = 10161;
+	spawnLocR3[1] = -6675;
+	spawnLocR3[2] = 29.88;
+}
+
+/*
+==============
 idPlayer::Spawn
 
 Prepare any resources used by the player.
@@ -1811,6 +1850,8 @@ void idPlayer::Spawn( void ) {
 
 	numZombies = 0;
 	numZombiesToSpawn = 5; //First wave has 5 zombies
+	spawnLocNum = 0;
+	InitializeZombieSpawnLocations();
 
 	newWaveTime = 197000; //First wave start time
 	waveStart = true;
@@ -9659,19 +9700,6 @@ void idPlayer::Think( void ) {
 
 	inBuyZonePrev = false;
 
-	/*
-		TODO:
-		-Set initial player health to 100 somehow (done)
-		-Start first wave after approx. 7 seconds of spawning in (done)
-		-Create a list of possible spawn locations (done)
-		-Lock the player in the start room (done)
-		-When a zombie dies, decrease numZombies (done)
-		-When numZombies = 0, wait approx. 10 seconds and start a new wave (done)
-		-As wave number increases, number of enemies to spawn (done)
-		-Update the wave number in the HUD
-		-When zombie takes damage, update the player's point (cash) total
-	*/
-
 	//Start the first wave and all subsequent waves
 	if ((gameLocal.GetTime() > newWaveTime) && waveStart)
 	{
@@ -9711,6 +9739,7 @@ void idPlayer::SpawnZombie() {
 	const char* key, * value;
 	float		yaw;
 	idVec3		org;
+	idVec3		playerOrg;
 	idDict		dict;
 
 	int r; //Used for generating random location
@@ -9729,6 +9758,73 @@ void idPlayer::SpawnZombie() {
 	//		BASED ON THE PLAYER'S LOCATION. LIKE IF THEY ARE ON THE LEFT HAND SIDE
 	//		OF THE SPAWN ROOM THEN HAVE 3 DIFFERENT LOCATIONS FOR EACH SIDE
 	//		AND SPAWN ZOMBIES RANDOMLY AMONGST THOSE LOCATIONS
+	playerOrg = GetPhysics()->GetOrigin();
+	if (playerOrg[0] <= 9800)
+	{
+		//On left hand side of map
+		//Set 3 different spawn locations for this side with a touch of randomness
+		//Spawn Locations:
+		//	9150 -6995 2.12
+		//	9205 -6514 4.86
+		//  9500 -7118 0.45
+		gameLocal.Printf("Player on left hand side of map.\n");
+		r = rand() % (50 - 0 + 1) + 0;
+		if (spawnLocNum == 0)
+		{
+			//spawn at first left location
+			org = spawnLocL1 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum++;
+			gameLocal.Printf("Spawning at first left location.\n");
+		}
+		else if (spawnLocNum == 1)
+		{
+			//spawn at second left location
+			org = spawnLocL2 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum++;
+			gameLocal.Printf("Spawning at second left location.\n");
+		}
+		else
+		{
+			//spawn at third left location
+			org = spawnLocL3 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum = 0; //Reset to go back to first position
+			gameLocal.Printf("Spawning at third left location.\n");
+		}
+	}
+	else
+	{
+		//On right hand side of map
+		//Set 3 different spawn locations for this side with a touch of randomness
+		//Spawn Locations:
+		//	10389 -6417 1.25
+		//	10968 -6907 7.70
+		//	10438 -7232 8.63
+		gameLocal.Printf("Player on right hand side of map.\n");
+		r = rand() % (50 - 0 + 1) + 0;
+		if (spawnLocNum == 0)
+		{
+			//spawn at first right location
+			org = spawnLocR1 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum++;
+			gameLocal.Printf("Spawning at first right location.\n");
+		}
+		else if (spawnLocNum == 1)
+		{
+			//spawn at second right location
+			org = spawnLocR2 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum++;
+			gameLocal.Printf("Spawning at second right location.\n");
+		}
+		else
+		{
+			//spawn at third right location
+			org = spawnLocR3 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
+			spawnLocNum = 0; //Reset to go back to first position
+			gameLocal.Printf("Spawning at third right location.\n");
+		}
+	}
+
+	/*
 	r = rand() % (200 - 50 + 1) + 50;
 	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(r, r, 1);
 	if ((org[0] >= 9300 && org[0] <= 9520 && org[1] >= -6900 && org[1] <= -6500) 
@@ -9741,6 +9837,7 @@ void idPlayer::SpawnZombie() {
 		org[1] = -6995.4 + r;
 		org[2] = 2.12;
 	}
+	*/
 
 	dict.Set("origin", org.ToString());
 
