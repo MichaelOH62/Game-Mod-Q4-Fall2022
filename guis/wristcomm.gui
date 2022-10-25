@@ -817,7 +817,7 @@ windowDef Desktop
 					rect	170,195,180,100
 					visible	1
 					forecolor	0.811,0.866,0.709,0
-					text	"The buy menu gives you access to more powerful weapons and perks to increase your chances of surivival. Zombies will spawn in increased numbers as waves continue. Keep your distance and manage your ammunition."
+					text	"The buy menu gives you access to more powerful weapons and perks to increase your chances of survival. Zombies will spawn in increased numbers as waves continue. Keep your distance and manage your ammunition."
 					textscale	0.19
 					font	"fonts/lowpixel"
 				}
