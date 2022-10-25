@@ -9753,11 +9753,6 @@ void idPlayer::SpawnZombie() {
 	dict.Set("angle", va("%f", yaw + 180));
 
 	//Generate random spawn location
-	//TODO: FIX SPAWNING ISSUES
-	//		MAYBE CHANGE THE WAY THEY ARE SPAWNING TO HARD CODED LOCATIONS
-	//		BASED ON THE PLAYER'S LOCATION. LIKE IF THEY ARE ON THE LEFT HAND SIDE
-	//		OF THE SPAWN ROOM THEN HAVE 3 DIFFERENT LOCATIONS FOR EACH SIDE
-	//		AND SPAWN ZOMBIES RANDOMLY AMONGST THOSE LOCATIONS
 	playerOrg = GetPhysics()->GetOrigin();
 	if (playerOrg[0] <= 9800)
 	{
@@ -9767,28 +9762,24 @@ void idPlayer::SpawnZombie() {
 		//	9150 -6995 2.12
 		//	9205 -6514 4.86
 		//  9500 -7118 0.45
-		gameLocal.Printf("Player on left hand side of map.\n");
 		r = rand() % (50 - 0 + 1) + 0;
 		if (spawnLocNum == 0)
 		{
 			//spawn at first left location
 			org = spawnLocL1 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum++;
-			gameLocal.Printf("Spawning at first left location.\n");
 		}
 		else if (spawnLocNum == 1)
 		{
 			//spawn at second left location
 			org = spawnLocL2 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum++;
-			gameLocal.Printf("Spawning at second left location.\n");
 		}
 		else
 		{
 			//spawn at third left location
 			org = spawnLocL3 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum = 0; //Reset to go back to first position
-			gameLocal.Printf("Spawning at third left location.\n");
 		}
 	}
 	else
@@ -9799,45 +9790,26 @@ void idPlayer::SpawnZombie() {
 		//	10389 -6417 1.25
 		//	10968 -6907 7.70
 		//	10438 -7232 8.63
-		gameLocal.Printf("Player on right hand side of map.\n");
 		r = rand() % (50 - 0 + 1) + 0;
 		if (spawnLocNum == 0)
 		{
 			//spawn at first right location
 			org = spawnLocR1 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum++;
-			gameLocal.Printf("Spawning at first right location.\n");
 		}
 		else if (spawnLocNum == 1)
 		{
 			//spawn at second right location
 			org = spawnLocR2 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum++;
-			gameLocal.Printf("Spawning at second right location.\n");
 		}
 		else
 		{
 			//spawn at third right location
 			org = spawnLocR3 + idAngles(0, yaw, 0).ToForward() + idVec3(r, r, 1);
 			spawnLocNum = 0; //Reset to go back to first position
-			gameLocal.Printf("Spawning at third right location.\n");
 		}
 	}
-
-	/*
-	r = rand() % (200 - 50 + 1) + 50;
-	org = GetPhysics()->GetOrigin() + idAngles(0, yaw, 0).ToForward() * 160 + idVec3(r, r, 1);
-	if ((org[0] >= 9300 && org[0] <= 9520 && org[1] >= -6900 && org[1] <= -6500) 
-		|| (org[0] >= 10250 && org[0] <= 10350) || (org[0] >= 9630 && org[0] <= 10050))
-	{
-		//Zombie being spawned in bad location
-		//New origin is a safety spawn (should be no issues spawning here)
-		r = rand() % (15 - 0 + 1) + 0;	//Add a bit of randomness to hopefully avoid spawns on top of each other
-		org[0] = 9150.33 + r;
-		org[1] = -6995.4 + r;
-		org[2] = 2.12;
-	}
-	*/
 
 	dict.Set("origin", org.ToString());
 
