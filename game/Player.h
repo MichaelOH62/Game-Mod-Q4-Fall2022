@@ -428,6 +428,17 @@ public:
 	//Variables for handling spawning in zombies
 	int numZombies;
 	int numZombiesToSpawn;
+	int spawnLocNum;
+
+	//Three spawn location on left hand side of map
+	idVec3 spawnLocL1;
+	idVec3 spawnLocL2;
+	idVec3 spawnLocL3;
+
+	//Three spawn locations on right hand side of map
+	idVec3 spawnLocR1;
+	idVec3 spawnLocR2;
+	idVec3 spawnLocR3;
 
 	//Variables for handling the wave system
 	bool waveStart;
@@ -449,6 +460,8 @@ public:
 
 	//Function for starting a new wave
 	void StartWave(void);
+	//Function for initializing the spawn locations of zombies
+	void InitializeZombieSpawnLocations(void);
 	//Function for spawning a new wave of zombies
 	void SpawnZombie(void);
 
