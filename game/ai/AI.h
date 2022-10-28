@@ -870,9 +870,6 @@ public:
 	idEntityPtr<idActor>	leader;
 	idEntityPtr<rvSpawner>	spawner;
 
-	float baseHealth; //Keep track of the base health of a zombie
-	float healthF;	//Added to make zombies stronger as waves continue
-
 	bool						ValidateCover					( void );
 
 	virtual bool				UpdateRunStatus					( void );

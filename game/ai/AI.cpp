@@ -139,10 +139,6 @@ idAI::idAI ( void ) {
 	actionAnimNum	= 0;
 	actionSkipTime	= 0;
 	actionTime		= 0;
-
-	//TODO: Figure out a way to get the zombie health changes to stay
-	baseHealth = 55; //Default zombie health
-	healthF = 55;	//Default zombie health, will be changed as waves increase
 }
 
 /*
@@ -888,6 +884,7 @@ void idAI::Spawn( void ) {
 	PostEventMS( &EV_PostSpawn, 0 );
 	// RAVEN END
 
+	//Get the player
 	idPlayer* player = NULL;
 
 	player = gameLocal.GetLocalPlayer();
@@ -895,12 +892,7 @@ void idAI::Spawn( void ) {
 		return;
 	}
 	
-	if (player->waveCount % 3 == 0)	//Every 3 waves increase zombie health by 10
-	{
-		healthF = baseHealth + (5 * player->waveCount);
-		
-	}
-	Event_SetHealth(healthF);
+	Event_SetHealth(player->zombieHealth);	//Set the zombie's health
 }
 
 /*

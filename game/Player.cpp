@@ -1851,6 +1851,8 @@ void idPlayer::Spawn( void ) {
 	numZombies = 0;
 	numZombiesToSpawn = 5; //First wave has 5 zombies
 	spawnLocNum = 0;
+	zombieHealth = 55; //Default zombie health
+
 	InitializeZombieSpawnLocations();
 
 	newWaveTime = 197000; //First wave start time
@@ -9748,12 +9750,17 @@ void idPlayer::Think( void ) {
 //Function for starting a new wave
 void idPlayer::StartWave() {
 	waveCount += 1;
-	//gameLocal.Printf("Current Wave: %d\n", waveCount);
 
 	//Spawn one more zombie every 2 waves
 	if (waveCount % 2 == 0)
 	{
 		numZombiesToSpawn += 1;
+	}
+
+	//Every 3 waves, increase the zombie's health
+	if (waveCount % 3 == 0)
+	{
+		zombieHealth = zombieHealth + (5 * waveCount);	//Increase the zombie health
 	}
 
 	//Loop to spawn in all of the zombies
@@ -9846,9 +9853,11 @@ void idPlayer::SpawnZombie() {
 	idEntity* newEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &newEnt);
 
+	/*
 	if (newEnt) {
 		//gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 	}
+	*/
 }
 
 /*
