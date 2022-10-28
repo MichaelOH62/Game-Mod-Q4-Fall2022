@@ -29,7 +29,12 @@ Goals for this project are:
   - A wave count variable keeps track of how many waves have passed.
 - [x] Rethemed Weapons
   - All weapons changed to behave differently than the base game.
-- [ ] 5 Different Perks
+- [x] 5 Different Perks
+  - Juggernog: Increase max health to 200 and health restored at wave start to 100.
+  - Stamin-Up: Increase movement speed by 1.5x.
+  - Ultra Jump: Increase jump height by 2x.
+  - Double-Tap: Each shot of every weapon is doubled with no cost to ammo.
+  - Quick Revive: If player takes damage that would set their health below 0, restore them to 50 health and lose all perks.
 - [ ] 5 Different Drops / Item Pickups / Power Ups
 - [ ] Point Based System / Buy Menu
   - Added a points variable for the player.
