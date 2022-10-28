@@ -883,6 +883,16 @@ void idAI::Spawn( void ) {
 	// twhitaker: needed this for difficulty settings
 	PostEventMS( &EV_PostSpawn, 0 );
 	// RAVEN END
+
+	//Get the player
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+	
+	Event_SetHealth(player->zombieHealth);	//Set the zombie's health
 }
 
 /*

@@ -2755,7 +2755,7 @@ void idAI::SlideMove( void ) {
 	vel -= vel * AI_FLY_DAMPENING * MS2SEC( gameLocal.msec );
 	vel += goalDelta * MS2SEC( gameLocal.msec );
 
-	// cap our speed
+	// cap our 
 	vel.Truncate( move.fly_speed );
 	vel.z = z;
 	physicsObj.SetLinearVelocity( vel );

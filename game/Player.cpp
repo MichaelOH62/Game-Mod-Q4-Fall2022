@@ -1851,6 +1851,8 @@ void idPlayer::Spawn( void ) {
 	numZombies = 0;
 	numZombiesToSpawn = 5; //First wave has 5 zombies
 	spawnLocNum = 0;
+	zombieHealth = 55; //Default zombie health
+
 	InitializeZombieSpawnLocations();
 
 	newWaveTime = 197000; //First wave start time
@@ -9725,11 +9727,15 @@ void idPlayer::Think( void ) {
 		waveStart = false;
 		if (hasJugg)
 		{
-			Event_SetHealth(200);	//If player has jugg, set health to 200
+			Event_SetHealth(health + 100);	//If player has jugg, add 100 points of health to player
 		}
 		else
 		{
-			Event_SetHealth(100);	//At the start of every wave, restore player to full health
+			if (waveCount == 0)	//Set health to 100 at start of first wave
+			{
+				Event_SetHealth(100);
+			}
+			Event_SetHealth((health + 50 > 100) ? 100 : health + 50);	//At the start of every wave, add 50 points of health to player, cap at 100
 		}
 		StartWave();
 	}
@@ -9739,30 +9745,22 @@ void idPlayer::Think( void ) {
 		waveEnd = false;
 		newWaveTime = gameLocal.GetTime() + 10000;
 	}
-
-	//Check if the player is going to die and they have the quick revive perk
-	if (health <= 1 && hasQuickRevive)
-	{
-		//Restore player to full health and remove all perks
-		Event_SetHealth(100);
-		hasJugg = false;
-		hasStaminUp = false;
-		hasUltraJump = false;
-		hasDoubleTap = false;
-		hasQuickRevive = false;
-		gameLocal.Printf("Quick Revive activated, losing all perks!\n");
-	}
 }
 
 //Function for starting a new wave
 void idPlayer::StartWave() {
 	waveCount += 1;
-	//gameLocal.Printf("Current Wave: %d\n", waveCount);
 
 	//Spawn one more zombie every 2 waves
 	if (waveCount % 2 == 0)
 	{
 		numZombiesToSpawn += 1;
+	}
+
+	//Every 3 waves, increase the zombie's health
+	if (waveCount % 3 == 0)
+	{
+		zombieHealth = zombieHealth + (5 * waveCount);	//Increase the zombie health
 	}
 
 	//Loop to spawn in all of the zombies
@@ -9855,9 +9853,11 @@ void idPlayer::SpawnZombie() {
 	idEntity* newEnt = NULL;
 	gameLocal.SpawnEntityDef(dict, &newEnt);
 
+	/*
 	if (newEnt) {
 		//gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 	}
+	*/
 }
 
 /*
@@ -10489,6 +10489,21 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 				if ( health < 1 ) {
 					health = 1;
 				}
+			}
+		}
+
+		if (hasQuickRevive)	//Don't die if have quick revive perk
+		{
+			if (health < 1) {
+				//Restore player to 50 health and remove all perks
+				Event_SetHealth(50);
+				hasJugg = false;
+				hasStaminUp = false;
+				hasUltraJump = false;
+				hasDoubleTap = false;
+				hasQuickRevive = false;
+				pfl.dead = false;
+				gameLocal.Printf("Quick Revive activated, losing all perks!\n");
 			}
 		}
 
@@ -12711,43 +12726,43 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		}
 	}
 
-	if ( oldHealth > 0 && health <= 0 && !hasQuickRevive) {
- 		if ( stateHitch ) {
- 			// so we just hide and don't show a death skin
- 			UpdateDeathSkin( true );
- 		}
+	if ( oldHealth > 0 && health <= 0) {
+		if (stateHitch) {
+			// so we just hide and don't show a death skin
+			UpdateDeathSkin(true);
+		}
 		// die
 		pfl.dead = true;
 		ClearPowerUps();
-		SetAnimState( ANIMCHANNEL_LEGS, "Legs_Dead", 4 );
-		SetAnimState( ANIMCHANNEL_TORSO, "Torso_Dead", 4 );
+		SetAnimState(ANIMCHANNEL_LEGS, "Legs_Dead", 4);
+		SetAnimState(ANIMCHANNEL_TORSO, "Torso_Dead", 4);
 		animator.ClearAllJoints();
 		StartRagdoll();
-		physicsObj.SetMovementType( PM_DEAD );
+		physicsObj.SetMovementType(PM_DEAD);
 
-		if ( !stateHitch ) {
- 			StartSound( "snd_death", SND_CHANNEL_VOICE, 0, false, NULL );
- 		}
-		
-		const idDeclEntityDef* def = static_cast<const idDeclEntityDef*>(declManager->DeclByIndex ( DECL_ENTITYDEF, lastDamageDef ));
-		if ( def ) {		
+		if (!stateHitch) {
+			StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, NULL);
+		}
+
+		const idDeclEntityDef* def = static_cast<const idDeclEntityDef*>(declManager->DeclByIndex(DECL_ENTITYDEF, lastDamageDef));
+		if (def) {
 			// TODO: get attackers push scale?
-			InitDeathPush ( lastDamageDir, lastDamageLocation, &def->dict, 1.0f );
-			ClientDamageEffects ( def->dict, lastDamageDir, ( oldHealth - health ) * 4 );
+			InitDeathPush(lastDamageDir, lastDamageLocation, &def->dict, 1.0f);
+			ClientDamageEffects(def->dict, lastDamageDir, (oldHealth - health) * 4);
 		}
 
 		//gib them here
-		if ( health < -20 || ( lastKiller && lastKiller->PowerUpActive( POWERUP_QUADDAMAGE )) )	{	
-			ClientGib( lastDamageDir );
-		}		
+		if (health < -20 || (lastKiller && lastKiller->PowerUpActive(POWERUP_QUADDAMAGE))) {
+			ClientGib(lastDamageDir);
+		}
 
-		if ( weapon ) {
+		if (weapon) {
 			weapon->OwnerDied();
 
 			// Get rid of the weapon now
 			delete weapon;
 			weapon = NULL;
-			currentWeapon = -1;			
+			currentWeapon = -1;
 		}
 	} else if ( oldHealth <= 0 && health > 0 ) {
  		// respawn

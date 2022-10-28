@@ -436,6 +436,7 @@ public:
 	int numZombies;
 	int numZombiesToSpawn;
 	int spawnLocNum;
+	float zombieHealth;
 
 	//Three spawn location on left hand side of map
 	idVec3 spawnLocL1;
