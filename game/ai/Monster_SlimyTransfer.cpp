@@ -67,8 +67,8 @@ void rvMonsterSlimyTransfer::Spawn ( void ) {
 	actionVomitAttack.Init ( spawnArgs, "action_vomitAttack", "Torso_VomitAttack", AIACTIONF_ATTACK );
 
 	InitSpawnArgsVariables();
-
-	//Event_Set health, velocity etc to make game harder
+	gameLocal.Printf("Health Float: %f", healthF);
+	gameLocal.Printf("Health Int: %d", health);
 }
 
 /*
