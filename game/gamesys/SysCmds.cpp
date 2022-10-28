@@ -531,8 +531,61 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 		return;
 	}
 
-	if ( !give_all && !player->Give( name, value ) ) {
-		gameLocal.Printf( "unknown item\n" );
+	if (give_all) //Give all perks to player
+	{
+		player->GivePowerUp(PERK_JUGG, -1);
+		player->hasJugg = true;
+		player->GivePowerUp(PERK_STAMIN_UP, -1);
+		player->hasStaminUp = true;
+		player->GivePowerUp(PERK_ULTRA_JUMP, -1);
+		player->hasUltraJump = true;
+		player->GivePowerUp(PERK_DOUBLE_TAP, -1);
+		player->hasDoubleTap = true;
+		player->GivePowerUp(PERK_QUICK_REVIVE, -1);
+		player->hasQuickRevive = true;
+		gameLocal.Printf("Player has all perks!\n");
+		return;
+	}
+
+	/* Give player custom perks */
+	if (idStr::Icmp(name, "jugg") == 0) {
+		player->GivePowerUp(PERK_JUGG, -1);
+		player->hasJugg = true;
+		gameLocal.Printf("Sugar seduction delight!\n");
+		return;
+	}
+
+	if (idStr::Icmp(name, "stamin_up") == 0) {
+		player->GivePowerUp(PERK_STAMIN_UP, -1);
+		player->hasStaminUp = true;
+		gameLocal.Printf("Sounds like it's Staaaaamin-Up time!\n");
+		return;
+	}
+
+	if (idStr::Icmp(name, "ultra_jump") == 0) {
+		player->GivePowerUp(PERK_ULTRA_JUMP, -1);
+		player->hasUltraJump = true;
+		gameLocal.Printf("Death from above!\n");
+		return;
+	}
+
+	if (idStr::Icmp(name, "double_tap") == 0) {
+		player->GivePowerUp(PERK_DOUBLE_TAP, -1);
+		player->hasDoubleTap = true;
+		gameLocal.Printf("YA THIRSTY PARTNER!?\n");
+		return;
+	}
+
+	if (idStr::Icmp(name, "quick_revive") == 0) {
+		player->GivePowerUp(PERK_QUICK_REVIVE, -1);
+		player->hasQuickRevive = true;
+		gameLocal.Printf("You need a little revive!\n");
+		return;
+	}
+
+	//Attempting to give item not recognized
+	if (!give_all && !player->Give(name, value)) {
+		gameLocal.Printf("unknown item\n");
 	}
 }
 

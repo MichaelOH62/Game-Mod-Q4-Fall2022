@@ -1860,6 +1860,13 @@ void idPlayer::Spawn( void ) {
 
 	points = 0; //Used for purchasing weapons / powerups
 
+	/* Initialize perk variables to false */
+	hasJugg = false;
+	hasStaminUp = false;
+	hasUltraJump = false;
+	hasDoubleTap = false;
+	hasQuickRevive = false;
+
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
 	}
@@ -8809,6 +8816,11 @@ void idPlayer::AdjustSpeed( void ) {
 
 	speed *= PowerUpModifier(PMOD_SPEED);
 
+	if (hasStaminUp) // Player has the stamin-up perk, increase movement speed
+	{	
+		speed *= 1.5;
+	}
+
 	if ( influenceActive == INFLUENCE_LEVEL3 ) {
 		speed *= 0.33f;
 	}
@@ -9007,7 +9019,7 @@ void idPlayer::GetAASLocation( idAAS *aas, idVec3 &pos, int &areaNum ) const {
 idPlayer::Move
 ==============
 */
-void idPlayer::Move( void ) {
+void idPlayer::Move(void) {
 	float newEyeOffset;
 	idVec3 oldOrigin;
 	idVec3 oldVelocity;
@@ -9019,8 +9031,15 @@ void idPlayer::Move( void ) {
 	pushVelocity = physicsObj.GetPushedLinearVelocity();
 
 	// set physics variables
-	physicsObj.SetMaxStepHeight( pm_stepsize.GetFloat() );
-	physicsObj.SetMaxJumpHeight( pm_jumpheight.GetFloat() );
+	physicsObj.SetMaxStepHeight(pm_stepsize.GetFloat());
+	if (hasUltraJump)	//Player has ultra jump perk, increase max jump height
+	{
+		physicsObj.SetMaxJumpHeight(pm_jumpheight.GetFloat() * 2);
+	}
+	else    //Player does not have ultra jump perk, default max jump height
+	{
+		physicsObj.SetMaxJumpHeight(pm_jumpheight.GetFloat());
+	}
 
 	if ( noclip ) {
 		physicsObj.SetContents( 0 );
@@ -9704,7 +9723,14 @@ void idPlayer::Think( void ) {
 	if ((gameLocal.GetTime() > newWaveTime) && waveStart)
 	{
 		waveStart = false;
-		Event_SetHealth(100);	//At the start of every wave, restore player to full health
+		if (hasJugg)
+		{
+			Event_SetHealth(200);	//If player has jugg, set health to 200
+		}
+		else
+		{
+			Event_SetHealth(100);	//At the start of every wave, restore player to full health
+		}
 		StartWave();
 	}
 	else if (numZombies == 0 && waveEnd) //Handle waiting 10 seconds before a new wave
@@ -9712,6 +9738,19 @@ void idPlayer::Think( void ) {
 		waveStart = true;
 		waveEnd = false;
 		newWaveTime = gameLocal.GetTime() + 10000;
+	}
+
+	//Check if the player is going to die and they have the quick revive perk
+	if (health <= 1 && hasQuickRevive)
+	{
+		//Restore player to full health and remove all perks
+		Event_SetHealth(100);
+		hasJugg = false;
+		hasStaminUp = false;
+		hasUltraJump = false;
+		hasDoubleTap = false;
+		hasQuickRevive = false;
+		gameLocal.Printf("Quick Revive activated, losing all perks!\n");
 	}
 }
 
@@ -12672,7 +12711,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 		}
 	}
 
-	if ( oldHealth > 0 && health <= 0 ) {
+	if ( oldHealth > 0 && health <= 0 && !hasQuickRevive) {
  		if ( stateHitch ) {
  			// so we just hide and don't show a death skin
  			UpdateDeathSkin( true );
