@@ -2505,6 +2505,13 @@ rvWeapon::Attack
 void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuseOffset, float power ) {
 	idVec3 muzzleOrigin;
 	idMat3 muzzleAxis;
+
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
 	
 	if ( !viewModel ) {
 		common->Warning( "NULL viewmodel %s\n", __FUNCTION__ );
@@ -2513,6 +2520,11 @@ void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuse
 	
 	if ( viewModel->IsHidden() ) {
 		return;
+	}
+
+	if (player->hasDoubleTap)	//Double the attacks per attack if the player has double tap perk
+	{
+		num_attacks = num_attacks * 2;
 	}
 
 	// avoid all ammo considerations on an MP client

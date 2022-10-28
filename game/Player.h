@@ -144,8 +144,15 @@ enum {
 	POWERUP_TEAM_AMMO_REGEN,
 	POWERUP_TEAM_HEALTH_REGEN,
 	POWERUP_TEAM_DAMAGE_MOD,
-	
-	POWERUP_MAX
+
+	POWERUP_MAX,
+
+	// Custom Zombies Perks
+	PERK_JUGG,
+	PERK_STAMIN_UP,
+	PERK_ULTRA_JUMP,
+	PERK_DOUBLE_TAP,
+	PERK_QUICK_REVIVE
 };
 
 enum {
@@ -448,6 +455,13 @@ public:
 
 	//Variable for the player's points
 	int points;
+
+	//Variables to keep track of a player's perks
+	bool hasJugg;
+	bool hasStaminUp;
+	bool hasUltraJump;
+	bool hasDoubleTap;
+	bool hasQuickRevive;
 
 public:
 	CLASS_PROTOTYPE( idPlayer );
