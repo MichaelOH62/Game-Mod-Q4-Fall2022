@@ -778,6 +778,7 @@ bool idItem::Pickup( idPlayer *player ) {
 
 	float rVal = gameLocal.random.RandomInt(10);	//Randomly determine which powerup it is
 
+	//Determine which powerup it is based on this logic
 	if (rVal <= 2)
 	{
 		if (player->GetObjectiveHud()) {
