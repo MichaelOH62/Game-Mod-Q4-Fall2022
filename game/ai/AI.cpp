@@ -1253,6 +1253,47 @@ void idAI::Think( void ) {
 	if ( ai_speeds.GetBool ( ) ) {
 		aiManager.timerThink.Stop ( );
 	}
+
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	//Player has insta-kill, reduce zombie health to 1
+	if (player->hasInstaKill)
+	{
+		if (gameLocal.GetTime() > player->instaKillEndTime) //Insta-kill perk is expired
+		{
+			Event_SetHealth(55); //Reset to base health, better solution possible
+			player->hasInstaKill = false;
+			gameLocal.Printf("Insta-Kill no longer active.\n");
+		}
+		else //Player has insta-kill and not expired
+		{
+			Event_SetHealth(1);
+		}
+	}
+
+	//Player has zombie blood perk
+	if (player->hasZombieBlood)
+	{
+		if (gameLocal.GetTime() > player->zombieBloodEndTime) //Zombie blood perk is expired
+		{
+			Event_BecomeAggressive();
+			player->hasZombieBlood = false;
+			gameLocal.Printf("Zombie Blood no longer active.\n");
+		}
+		else //Player has zombie blood and not expired
+		{
+			Event_BecomePassive(true);
+		}
+	}
+	else //Player does not have zombie blood perk, attack
+	{
+		Event_BecomeAggressive();
+	}
 }
 
 /*

@@ -585,37 +585,40 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 
 	/* Give player custom powerups */
 	if (idStr::Icmp(name, "double_points") == 0) {
-		player->GivePowerUp(POWERUP_DOUBLE_POINTS, SEC2MS(30.0f));
-		player->hasQuickRevive = true;
-		gameLocal.Printf("Double Points!\n");
+		player->GivePowerUp(POWERUP_DOUBLE_POINTS, -1);
+		player->hasDoublePoints = true;
+		player->doublePointsEndTime = gameLocal.GetTime() + player->powerupDur;
+		gameLocal.Printf("Double Points!\nActive for 10 seconds.\n");
 		return;
 	}
 
 	if (idStr::Icmp(name, "insta_kill") == 0) {
-		player->GivePowerUp(POWERUP_INSTA_KILL, SEC2MS(30.0f));
-		player->hasQuickRevive = true;
-		gameLocal.Printf("Insta-Kill!\n");
+		player->GivePowerUp(POWERUP_INSTA_KILL, -1);
+		player->hasInstaKill = true;
+		player->instaKillEndTime = gameLocal.GetTime() + player->powerupDur;
+		gameLocal.Printf("Insta-Kill!\nActive for 10 seconds.\n");
 		return;
 	}
 
 	if (idStr::Icmp(name, "max_ammo") == 0) {
 		player->GivePowerUp(POWERUP_MAX_AMMO, -1);
-		player->hasQuickRevive = true;
+		player->hasMaxAmmo = true;
 		gameLocal.Printf("Max Ammo!\n");
 		return;
 	}
 
 	if (idStr::Icmp(name, "nuke") == 0) {
 		player->GivePowerUp(POWERUP_NUKE, -1);
-		player->hasQuickRevive = true;
+		player->hasNuke = true;
 		gameLocal.Printf("Nuke!\n");
 		return;
 	}
 
-	if (idStr::Icmp(name, "fire_sale") == 0) {
-		player->GivePowerUp(POWERUP_FIRE_SALE, -1);
-		player->hasQuickRevive = true;
-		gameLocal.Printf("Fire Sale!\n");
+	if (idStr::Icmp(name, "zombie_blood") == 0) {
+		player->GivePowerUp(POWERUP_ZOMBIE_BLOOD, -1);
+		player->hasZombieBlood = true;
+		player->zombieBloodEndTime = gameLocal.GetTime() + player->zombieBloodDur;
+		gameLocal.Printf("Zombie Blood!\nActive for 5 seconds.\n");
 		return;
 	}
 

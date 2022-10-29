@@ -1869,6 +1869,16 @@ void idPlayer::Spawn( void ) {
 	hasDoubleTap = false;
 	hasQuickRevive = false;
 
+	powerupDur = 10000;	//Double points / insta-kill last 10 seconds
+	zombieBloodDur = 5000;	//Zombie blood lasts 5 seconds
+
+	/* Initialize powerup variables to false */
+	hasDoublePoints = false;
+	hasInstaKill = false;
+	hasMaxAmmo = false;
+	hasNuke = false;
+	hasZombieBlood = false;
+
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
 	}
@@ -9744,6 +9754,27 @@ void idPlayer::Think( void ) {
 		waveStart = true;
 		waveEnd = false;
 		newWaveTime = gameLocal.GetTime() + 10000;
+	}
+
+	/* Check for active powerups */
+	if (hasMaxAmmo)	//Player has max ammo
+	{
+		for (int i = 0; i < MAX_AMMOTYPES; i++) {
+			inventory.ammo[i] = inventory.MaxAmmoForAmmoClass(this, rvWeapon::GetAmmoNameForIndex(i));
+		}
+		hasMaxAmmo = false;
+	}
+
+	if (hasNuke) //Player has nuke
+	{
+		idCmdArgs args;
+		KillEntities(args, idAI::GetClassType());
+		hasNuke = false;
+		points += 400;
+
+		//All zombies dead, start new wave
+		numZombies = 0;
+		waveEnd = true;
 	}
 }
 

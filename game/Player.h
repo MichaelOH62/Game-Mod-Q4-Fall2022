@@ -159,7 +159,7 @@ enum {
 	POWERUP_INSTA_KILL,
 	POWERUP_MAX_AMMO,
 	POWERUP_NUKE,
-	POWERUP_FIRE_SALE
+	POWERUP_ZOMBIE_BLOOD
 };
 
 enum {
@@ -470,6 +470,19 @@ public:
 	bool hasUltraJump;
 	bool hasDoubleTap;
 	bool hasQuickRevive;
+
+	//Variables to keep track of a player's powerups
+	//Do not need a variable for
+	int powerupDur;
+	int zombieBloodDur;
+	int doublePointsEndTime;
+	int instaKillEndTime;
+	int zombieBloodEndTime;
+	bool hasDoublePoints;
+	bool hasInstaKill;
+	bool hasMaxAmmo;
+	bool hasNuke;
+	bool hasZombieBlood;
 
 public:
 	CLASS_PROTOTYPE( idPlayer );
