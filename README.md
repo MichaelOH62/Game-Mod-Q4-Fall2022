@@ -35,7 +35,7 @@ Goals for this project are:
   - Ultra Jump: Increase jump height by 2x.
   - Double-Tap: Each shot of every weapon is doubled with no cost to ammo.
   - Quick Revive: If player takes damage that would set their health below 0, restore them to 50 health and lose all perks.
-- [ ] 5 Different Drops / Item Pickups / Power Ups
+- [ ] 5 Different Drops / Item Pickups / Powerups
 - [ ] Point Based System / Buy Menu
   - Added a points variable for the player.
   - Whenever the player kills a zombie, the player gains 100 points.
