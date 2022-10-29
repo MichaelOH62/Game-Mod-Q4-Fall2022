@@ -143,7 +143,13 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		player->waveEnd = true;
 	}
 
-	/* TODO: Add code/logic for randomly dropping a powerup on death. */
+	float rVal = gameLocal.random.RandomInt(100);
+
+	//Spawn powerup drop with a 10% chance and if they do not have any active powerups
+	if (rVal < 10 && (player->HasNoPowerups() == true) && (player->powerUpSpawned == false)) {
+		spawnArgs.Set("def_dropsItem1", "item_health_large");
+		player->powerUpSpawned = true;
+	}
 
 	StopEffect ( "fx_vomit_muzzle" );
 	idAI::OnDeath ( );

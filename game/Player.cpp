@@ -1878,6 +1878,8 @@ void idPlayer::Spawn( void ) {
 	hasMaxAmmo = false;
 	hasNuke = false;
 	hasZombieBlood = false;
+	powerUpSpawned = false;
+	hideTime = 0;
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -9776,6 +9778,11 @@ void idPlayer::Think( void ) {
 		numZombies = 0;
 		waveEnd = true;
 	}
+
+	if (gameLocal.GetTime() > hideTime) //Hide new powerup gui
+	{
+		HideObjective();
+	}
 }
 
 //Function for starting a new wave
@@ -9889,6 +9896,18 @@ void idPlayer::SpawnZombie() {
 		//gameLocal.Printf("spawned entity '%s'\n", newEnt->name.c_str());
 	}
 	*/
+}
+
+//Function for determining if a player has any active powerups
+bool idPlayer::HasNoPowerups() {
+	if (!hasDoublePoints && !hasInstaKill && !hasMaxAmmo && !hasNuke && !hasZombieBlood)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 /*

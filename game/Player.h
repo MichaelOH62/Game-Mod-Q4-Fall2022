@@ -483,6 +483,8 @@ public:
 	bool hasMaxAmmo;
 	bool hasNuke;
 	bool hasZombieBlood;
+	bool powerUpSpawned;
+	float hideTime;
 
 public:
 	CLASS_PROTOTYPE( idPlayer );
@@ -499,6 +501,8 @@ public:
 	void InitializeZombieSpawnLocations(void);
 	//Function for spawning a new wave of zombies
 	void SpawnZombie(void);
+	//Function to check if the player has no active powerups
+	bool HasNoPowerups(void);
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file
