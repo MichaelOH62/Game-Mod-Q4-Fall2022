@@ -119,12 +119,36 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		return;
 	}
 
-	player->points += 100;	//Player gets 100 points for a kill
+	if (player->hasDoublePoints) //Double points active
+	{
+		if (gameLocal.GetTime() > player->doublePointsEndTime)	//Double points expired
+		{
+			player->points += 100;	//Player gets 100 points for a kill
+			player->hasDoublePoints = false;
+			gameLocal.Printf("Double Points no longer active.\n");
+		}
+		else //Double points active and not expired
+		{
+			player->points += 200;	//Player gets 200 points for a kill with double points active
+		}
+	}
+	else //No double points
+	{
+		player->points += 100;	//Player gets 100 points for a kill
+	}
 
 	player->numZombies -= 1;
 	if (player->numZombies == 0)	//Check if that was the last zombie alive, if so end wave
 	{
 		player->waveEnd = true;
+	}
+
+	float rVal = gameLocal.random.RandomInt(100);
+
+	//Spawn powerup drop with a 10% chance and if they do not have any active powerups
+	if (rVal < 10 && (player->HasNoPowerups() == true) && (player->powerUpSpawned == false)) {
+		spawnArgs.Set("def_dropsItem1", "item_health_large");
+		player->powerUpSpawned = true;
 	}
 
 	StopEffect ( "fx_vomit_muzzle" );

@@ -152,7 +152,14 @@ enum {
 	PERK_STAMIN_UP,
 	PERK_ULTRA_JUMP,
 	PERK_DOUBLE_TAP,
-	PERK_QUICK_REVIVE
+	PERK_QUICK_REVIVE,
+
+	// Custom Zombies Powerups
+	POWERUP_DOUBLE_POINTS,
+	POWERUP_INSTA_KILL,
+	POWERUP_MAX_AMMO,
+	POWERUP_NUKE,
+	POWERUP_ZOMBIE_BLOOD
 };
 
 enum {
@@ -464,6 +471,21 @@ public:
 	bool hasDoubleTap;
 	bool hasQuickRevive;
 
+	//Variables to keep track of a player's powerups
+	//Do not need a variable for
+	int powerupDur;
+	int zombieBloodDur;
+	int doublePointsEndTime;
+	int instaKillEndTime;
+	int zombieBloodEndTime;
+	bool hasDoublePoints;
+	bool hasInstaKill;
+	bool hasMaxAmmo;
+	bool hasNuke;
+	bool hasZombieBlood;
+	bool powerUpSpawned;
+	float hideTime;
+
 public:
 	CLASS_PROTOTYPE( idPlayer );
 
@@ -479,6 +501,8 @@ public:
 	void InitializeZombieSpawnLocations(void);
 	//Function for spawning a new wave of zombies
 	void SpawnZombie(void);
+	//Function to check if the player has no active powerups
+	bool HasNoPowerups(void);
 
 	// save games
 	void					Save( idSaveGame *savefile ) const;					// archives object for save game file

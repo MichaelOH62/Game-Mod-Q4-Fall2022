@@ -355,8 +355,8 @@ windowDef Desktop
 				rect	413,53,228,18
 				visible	1
 				forecolor	1,0.5,0,0
-				text	"#str_200276"
-				textscale	0.25
+				text	"NEW POWERUP"
+				textscale	0.30
 				font	"fonts/marine"
 				textspacing	-1
 			}

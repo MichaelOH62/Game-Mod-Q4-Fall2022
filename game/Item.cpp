@@ -541,6 +541,15 @@ void idItem::Spawn( void ) {
 	
 	GetPhysics( )->SetClipMask( GetPhysics( )->GetClipMask( ) | CONTENTS_ITEMCLIP );
 	pickedUp = false;
+
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	player->powerUpSpawned = true;
 }
 
 /*
@@ -632,6 +641,7 @@ idItem::Pickup
 */
 bool idItem::Pickup( idPlayer *player ) {
 	//dropped weapon?
+	/*
 	bool dropped = spawnArgs.GetBool( "dropped" );
 
 	if ( gameLocal.isMultiplayer && !dropped && spawnArgs.FindKey( "weaponclass" ) 
@@ -750,6 +760,73 @@ bool idItem::Pickup( idPlayer *player ) {
 	trigger->SetContents( 0 );	
 	
 	StopEffect( "fx_idle" );
+	*/
+
+	/* When player picks up an item is here!!! */
+
+	/* Hide the item dropped once it is picked up */
+	if (pickupSkin) {
+		SetSkin(pickupSkin);
+		srvReady = 0;
+	}
+	else {
+		Hide();
+		BecomeInactive(TH_THINK);
+	}
+
+	player->powerUpSpawned = false;	//Allow a new powerup to be spawned
+
+	float rVal = gameLocal.random.RandomInt(10);	//Randomly determine which powerup it is
+
+	//Determine which powerup it is based on this logic
+	if (rVal <= 2)
+	{
+		if (player->GetObjectiveHud()) {
+			player->GetObjectiveHud()->SetStateString("objectivetitle", "DOUBLE POINTS! (10 SECONDS)");
+			player->CompleteObjective(spawnArgs.GetString("objectivetitle"));
+		}
+		player->hasDoublePoints = true;
+		player->doublePointsEndTime = gameLocal.GetTime() + player->powerupDur;
+		player->hideTime = gameLocal.GetTime() + 3000;
+	}
+	else if (rVal <= 4)
+	{
+		if (player->GetObjectiveHud()) {
+			player->GetObjectiveHud()->SetStateString("objectivetitle", "INSTA-KILL! (10 SECONDS)");
+			player->CompleteObjective(spawnArgs.GetString("objectivetitle"));
+		}
+		player->hasInstaKill= true;
+		player->instaKillEndTime = gameLocal.GetTime() + player->powerupDur;
+		player->hideTime = gameLocal.GetTime() + 3000;
+	}
+	else if (rVal <= 6)
+	{
+		if (player->GetObjectiveHud()) {
+			player->GetObjectiveHud()->SetStateString("objectivetitle", "MAX AMMO!");
+			player->CompleteObjective(spawnArgs.GetString("objectivetitle"));
+		}
+		player->hasMaxAmmo = true;
+		player->hideTime = gameLocal.GetTime() + 3000;
+	}
+	else if (rVal == 7)
+	{
+		if (player->GetObjectiveHud()) {
+			player->GetObjectiveHud()->SetStateString("objectivetitle", "NUKE!");
+			player->CompleteObjective(spawnArgs.GetString("objectivetitle"));
+		}
+		player->hasNuke = true;
+		player->hideTime = gameLocal.GetTime() + 3000;
+	}
+	else if (rVal >= 8)
+	{
+		if (player->GetObjectiveHud()) {
+			player->GetObjectiveHud()->SetStateString("objectivetitle", "ZOMBIE BLOOD! (5 SECONDS)");
+			player->CompleteObjective(spawnArgs.GetString("objectivetitle"));
+		}
+		player->hasZombieBlood = true;
+		player->zombieBloodEndTime = gameLocal.GetTime() + player->zombieBloodDur;
+		player->hideTime = gameLocal.GetTime() + 3000;
+	}
 
 	return true;
 }
@@ -1134,6 +1211,8 @@ void idItemPowerup::Spawn( void ) {
 	} else {
 		team = -1;
 	}
+
+	float endTime = 0;	//Initialize the powerup HUD endtTime to 0
 }
 
 /*
