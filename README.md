@@ -35,7 +35,12 @@ Goals for this project are:
   - Ultra Jump: Increase jump height by 2x.
   - Double-Tap: Each shot of every weapon is doubled with no cost to ammo.
   - Quick Revive: If player takes damage that would set their health below 0, restore them to 50 health and lose all perks.
-- [ ] 5 Different Drops / Item Pickups / Powerups
+- [x] 5 Different Drops / Item Pickups / Powerups
+  - Double Points: For 10 seconds, increase points earned by 2x.
+  - Insta-Kill: For 10 seconds, zombies' health reduced to 1.
+  - Max Ammo: Instantly fill the reserve ammunition of all weapons owned.
+  - Nuke: Instantly kill all zombies for the wave, player gets 400 points.
+  - Zombie Blood: For 5 seconds, all zombies become passive and idle.
 - [ ] Point Based System / Buy Menu
   - Added a points variable for the player.
   - Whenever the player kills a zombie, the player gains 100 points.
