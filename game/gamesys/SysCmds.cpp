@@ -456,6 +456,7 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 		if ( !give_all ) {
 			return;
 		}
+		player->points = 99999;	//Give player max points for testing purposes
 	}
 
 	if ( give_all || idStr::Icmp( name, "ammo" ) == 0 ) {
@@ -531,6 +532,7 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 		return;
 	}
 
+	/* Only used for testing purposes
 	if (give_all) //Give all perks to player
 	{
 		player->GivePowerUp(PERK_JUGG, -1);
@@ -546,8 +548,10 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 		gameLocal.Printf("Player has all perks!\n");
 		return;
 	}
+	*/
 
 	/* Give player custom perks */
+	/*
 	if (idStr::Icmp(name, "jugg") == 0) {
 		player->GivePowerUp(PERK_JUGG, -1);
 		player->hasJugg = true;
@@ -582,8 +586,10 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 		gameLocal.Printf("You need a little revive!\n");
 		return;
 	}
+	*/
 
 	/* Give player custom powerups */
+	/* Here for testing purposes */
 	if (idStr::Icmp(name, "double_points") == 0) {
 		player->GivePowerUp(POWERUP_DOUBLE_POINTS, -1);
 		player->hasDoublePoints = true;
@@ -2505,19 +2511,6 @@ static void Cmd_GameError_f( const idCmdArgs &args ) {
 	gameLocal.Error( "game error" );
 }
 
-static void Cmd_Locate_f(const idCmdArgs& args) {
-	idPlayer* player = NULL;
-
-	player = gameLocal.GetLocalPlayer();
-	if (!player) {
-		return;
-	}
-
-	//0 = x, 1 = y, 2 = z
-	idVec3 origin = player->GetPhysics()->GetOrigin();
-	gameLocal.Printf("Location: (%f,%f,%f)\n\n", origin[0], origin[1], origin[2]);
-}
-
 // RAVEN BEGIN
 // rjohnson: entity usage stats
 /*
@@ -3036,14 +3029,283 @@ void Cmd_ToggleBuyMenu_f( const idCmdArgs& args ) {
 	}
 }
 
-void Cmd_BuyItem_f( const idCmdArgs& args ) {
-	idPlayer* player = gameLocal.GetLocalPlayer();
-	if ( !player ) {
-		common->Printf( "ERROR: Cmd_BuyItem_f() failed, since GetLocalPlayer() was NULL.\n", player );
+/*
+==================
+Cmd_Locate_f
+==================
+*/
+static void Cmd_Locate_f(const idCmdArgs& args) {
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
 		return;
 	}
 
-	player->GenerateImpulseForBuyAttempt( args.Argv(1) );
+	//0 = x, 1 = y, 2 = z
+	idVec3 origin = player->GetPhysics()->GetOrigin();
+	gameLocal.Printf("Location: (%f,%f,%f)\n\n", origin[0], origin[1], origin[2]);
+}
+
+/*
+==================
+Cmd_Shop_f
+==================
+*/
+static void Cmd_Shop_f(const idCmdArgs& args) {
+	const char* itemNumber = 0;
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	/* Print out the contents of the shop */
+
+	gameLocal.Printf("Shop Inventory:\n\n");
+	gameLocal.Printf("Weapons (UNDER CONSTRUCTION):\n");
+	gameLocal.Printf("[1] Machinegun: %d points\n", player->machinegunPrice);
+	gameLocal.Printf("[2] Shotgun: %d points\n", player->shotgunPrice);
+	gameLocal.Printf("[3] Hyperblaster: %d points\n", player->hyperblasterPrice);
+	gameLocal.Printf("[4] Grenade Launcher: %d points\n", player->grenadelauncherPrice);
+	gameLocal.Printf("[5] Nailgun: %d points\n", player->nailgunPrice);
+	gameLocal.Printf("[6] Rocket Launcher: %d points\n", player->rocketlauncherPrice);
+	gameLocal.Printf("[7] Railgun: %d points\n", player->railgunPrice);
+	gameLocal.Printf("[8] Lightninggun: %d points\n", player->lightninggunPrice);
+	gameLocal.Printf("[9] Dark Matter Gun: %d points\n", player->dmgPrice);
+
+	gameLocal.Printf("\nPerks:\n");
+	gameLocal.Printf("[10] Juggernog: %d points\n", player->juggPrice);
+	gameLocal.Printf("[11] Stamin-Up: %d points\n", player->staminupPrice);
+	gameLocal.Printf("[12] Ultra Jump: %d points\n", player->ultrajumpPrice);
+	gameLocal.Printf("[13] Double Tap: %d points\n", player->doubletapPrice);
+	gameLocal.Printf("[14] Quick Revive: %d points\n", player->quickrevivePrice);
+	gameLocal.Printf("Type \'buy\' and the number of the item you want to purchase.\n");
+	gameLocal.Printf("Example: buy 1 to purchase the machinegun.\n");
+}
+
+/*
+==================
+Cmd_BuyItem_f
+==================
+*/
+void Cmd_BuyItem_f( const idCmdArgs& args ) {
+	const char* itemNumber;
+
+	idPlayer* player = NULL;
+
+	player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		return;
+	}
+
+	/* TODO: Fix purchasing of weapons */
+
+	/* Used for giving items to the player that they purchase from the shop */
+	if (args.Argc() > 1)
+	{
+		itemNumber = args.Argv(1);
+		if (strcmp(itemNumber, "1") == 0)
+		{
+			if (player->points >= player->machinegunPrice)
+			{
+				gameLocal.Printf("Purchase Machinegun.\n");
+				//player->GiveItem("weapon_machinegun");
+				//player->points = player->points - player->machinegunPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "2") == 0)
+		{
+			if (player->points >= player->shotgunPrice)
+			{
+				gameLocal.Printf("Purchase Shotgun.\n");
+				//player->GiveItem("weapon_shotgun");
+				//player->points = player->points - player->shotgunPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "3") == 0)
+		{
+			if (player->points >= player->hyperblasterPrice)
+			{
+				gameLocal.Printf("Purchase Hyperblaster.\n");
+				//player->GiveItem("weapon_hyperblaster");
+				//player->points = player->points - player->hyperblasterPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "4") == 0)
+		{
+			if (player->points >= player->grenadelauncherPrice)
+			{
+				gameLocal.Printf("Purchase Grenade Launcher.\n");
+				//player->GiveItem("weapon_grenadelauncher");
+				//player->points = player->points - player->grenadelauncherPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "5") == 0)
+		{
+			if (player->points >= player->nailgunPrice)
+			{
+				gameLocal.Printf("Purchase Nailgun.\n");
+				//player->GiveItem("weapon_nailgun");
+				//player->points = player->points - player->nailgunPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "6") == 0)
+		{
+			if (player->points >= player->rocketlauncherPrice)
+			{
+				gameLocal.Printf("Purchase Rocket Launcher.\n");
+				//player->GiveItem("weapon_rocketlauncher");
+				//player->points = player->points - player->rocketlauncherPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "7") == 0)
+		{
+			if (player->points >= player->railgunPrice)
+			{
+				gameLocal.Printf("Purchase Railgun.\n");
+				//player->GiveItem("weapon_railgun");
+				//player->points = player->points - player->railgunPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "8") == 0)
+		{
+			if (player->points >= player->lightninggunPrice)
+			{
+				gameLocal.Printf("Purchase Lightninggun.\n");
+				//player->GiveItem("weapon_lightninggun");
+				//player->points = player->points - player->lightninggunPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "9") == 0)
+		{
+			if (player->points >= player->dmgPrice)
+			{
+				gameLocal.Printf("Purchase Dark Matter Gun.\n");
+				//player->GiveItem("weapon_darkmattergun");
+				//player->points = player->points - player->dmgPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "10") == 0)
+		{
+			if (player->points >= player->juggPrice)
+			{
+				gameLocal.Printf("Purchase Juggernog.\n");
+				player->GivePowerUp(PERK_JUGG, -1);
+				player->hasJugg = true;
+				gameLocal.Printf("Sugar seduction delight!\n");
+				player->points = player->points - player->juggPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "11") == 0)
+		{
+			if (player->points >= player->staminupPrice)
+			{
+				gameLocal.Printf("Purchase Stamin-Up.\n");
+				player->GivePowerUp(PERK_STAMIN_UP, -1);
+				player->hasStaminUp = true;
+				gameLocal.Printf("Sounds like it's Staaaaamin-Up time!\n");
+				player->points = player->points - player->staminupPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "12") == 0)
+		{
+			if (player->points >= player->ultrajumpPrice)
+			{
+				gameLocal.Printf("Purchase Ultra Jump.\n");
+				player->GivePowerUp(PERK_ULTRA_JUMP, -1);
+				player->hasUltraJump = true;
+				gameLocal.Printf("Death from above!\n");
+				player->points = player->points - player->ultrajumpPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "13") == 0)
+		{
+			
+			if (player->points >= player->doubletapPrice)
+			{
+				gameLocal.Printf("Purchase Double Tap.\n");
+				player->GivePowerUp(PERK_DOUBLE_TAP, -1);
+				player->hasDoubleTap = true;
+				gameLocal.Printf("YA THIRSTY PARTNER!?\n");
+				player->points = player->points - player->doubletapPrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else if (strcmp(itemNumber, "14") == 0)
+		{
+			if (player->points >= player->quickrevivePrice)
+			{
+				gameLocal.Printf("Purchase Quick Revive.\n");
+				player->GivePowerUp(PERK_QUICK_REVIVE, -1);
+				player->hasQuickRevive = true;
+				gameLocal.Printf("You need a little revive!\n");
+				player->points = player->points - player->quickrevivePrice;
+			}
+			else
+			{
+				gameLocal.Printf("Not enough points to make purchase.");
+			}
+		}
+		else
+		{
+			gameLocal.Printf("Invalid item number.\n");
+		}
+
+		return;
+	}
 }
 // RITUAL END
 
@@ -3336,8 +3598,9 @@ void idGameLocal::InitConsoleCommands( void ) {
 // RITUAL START
 // squirrel: Mode-agnostic buymenus
 	cmdSystem->AddCommand( "buyMenu",				Cmd_ToggleBuyMenu_f,		CMD_FL_GAME,				"Toggle buy menu (if in a buy zone and the game type supports it)" );
-	cmdSystem->AddCommand( "buy",					Cmd_BuyItem_f,				CMD_FL_GAME,				"Buy an item (if in a buy zone and the game type supports it)" );
+	cmdSystem->AddCommand( "buy",					Cmd_BuyItem_f,				CMD_FL_GAME,				"Buy an item from the shop if the player has enough points and doesn't already own it" );
 	cmdSystem->AddCommand("locate", Cmd_Locate_f, CMD_FL_GAME, "Print out the players location");
+	cmdSystem->AddCommand("shop", Cmd_Shop_f, CMD_FL_GAME, "Print out the shop");
 // RITUAL END
 
 }

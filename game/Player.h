@@ -383,6 +383,8 @@ public:
 // squirrel: Mode-agnostic buymenus
 	bool					inBuyZone;
 	bool					inBuyZonePrev;
+	idUserInterface* buyMenu;				// buy menu
+	int				nextMenu;				// if 0, will do mainGui
 // RITUAL END
 	bool					spectating;
 	bool					lastHitToggle;
@@ -472,7 +474,6 @@ public:
 	bool hasQuickRevive;
 
 	//Variables to keep track of a player's powerups
-	//Do not need a variable for
 	int powerupDur;
 	int zombieBloodDur;
 	int doublePointsEndTime;
@@ -485,6 +486,25 @@ public:
 	bool hasZombieBlood;
 	bool powerUpSpawned;
 	float hideTime;
+	bool newPowerup;
+
+	//Variables for the price of purchasable weapons
+	int machinegunPrice;
+	int shotgunPrice;
+	int hyperblasterPrice;
+	int grenadelauncherPrice;
+	int nailgunPrice;
+	int rocketlauncherPrice;
+	int lightninggunPrice;
+	int railgunPrice;
+	int dmgPrice;
+
+	//Variables for the price of purchasable perks
+	int juggPrice;
+	int staminupPrice;
+	int ultrajumpPrice;
+	int doubletapPrice;
+	int quickrevivePrice;
 
 public:
 	CLASS_PROTOTYPE( idPlayer );
