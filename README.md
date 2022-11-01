@@ -44,3 +44,8 @@ Goals for this project are:
 - [ ] Point Based System / Buy Menu
   - Added a points variable for the player.
   - Whenever the player kills a zombie, the player gains 100 points.
+  - Added a price (in points) of all purchasable items.
+  - Created a buy menu through the console for purchasing perks.
+  - Typing the command 'shop' in the console prints all purchasable items.
+  - Typing 'buy' followed by the number of the item is how an item is purchased.
+  - TODO: Make weapons purchasable and implement a GUI for the Buy Menu
