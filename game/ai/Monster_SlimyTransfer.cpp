@@ -125,7 +125,7 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		{
 			player->points += 100;	//Player gets 100 points for a kill
 			player->hasDoublePoints = false;
-			gameLocal.Printf("Double Points no longer active.\n");
+			//gameLocal.Printf("Double Points no longer active.\n");
 		}
 		else //Double points active and not expired
 		{
@@ -137,6 +137,7 @@ void rvMonsterSlimyTransfer::OnDeath ( void ) {
 		player->points += 100;	//Player gets 100 points for a kill
 	}
 
+	player->buyMenuCash = player->points;	//Set the player's cash for buying equal to their points
 	player->numZombies -= 1;
 	if (player->numZombies == 0)	//Check if that was the last zombie alive, if so end wave
 	{

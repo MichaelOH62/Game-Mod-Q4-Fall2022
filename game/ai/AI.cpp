@@ -1266,9 +1266,9 @@ void idAI::Think( void ) {
 	{
 		if (gameLocal.GetTime() > player->instaKillEndTime) //Insta-kill perk is expired
 		{
-			Event_SetHealth(55); //Reset to base health, better solution possible
+			Event_SetHealth(player->zombieHealth); //Reset to health that zombie spawned in with
 			player->hasInstaKill = false;
-			gameLocal.Printf("Insta-Kill no longer active.\n");
+			//gameLocal.Printf("Insta-Kill no longer active.\n");
 		}
 		else //Player has insta-kill and not expired
 		{
@@ -1283,7 +1283,7 @@ void idAI::Think( void ) {
 		{
 			Event_BecomeAggressive();
 			player->hasZombieBlood = false;
-			gameLocal.Printf("Zombie Blood no longer active.\n");
+			//gameLocal.Printf("Zombie Blood no longer active.\n");
 		}
 		else //Player has zombie blood and not expired
 		{

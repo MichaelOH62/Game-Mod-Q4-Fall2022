@@ -1861,6 +1861,7 @@ void idPlayer::Spawn( void ) {
 	waveCount = 0;
 
 	points = 0; //Used for purchasing weapons / powerups
+	buyMenuCash = 0; //Will be set equal to points
 
 	/* Initialize perk variables to false */
 	hasJugg = false;
@@ -1880,6 +1881,27 @@ void idPlayer::Spawn( void ) {
 	hasZombieBlood = false;
 	powerUpSpawned = false;
 	hideTime = 0;
+	newPowerup = false;
+
+	/* Initialize the price of purchasable weapons */
+	machinegunPrice = 1500;
+	shotgunPrice = 2000;
+	hyperblasterPrice = 3000;
+	grenadelauncherPrice = 5000;
+	nailgunPrice = 6000;
+	railgunPrice = 7000;
+	lightninggunPrice = 4000;
+	rocketlauncherPrice = 8500;
+	dmgPrice = 10000;
+
+	/* Initialize the price of purchasable perks */
+	juggPrice = 2500;
+	staminupPrice = 2000;
+	ultrajumpPrice = 1000;
+	doubletapPrice = 2000;
+	quickrevivePrice = 500;
+
+	inBuyZone = true; //Player always has access to the buy menu
 
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
@@ -5403,20 +5425,20 @@ void idPlayer::RemoveInventoryItem( idDict *item ) {
 idPlayer::GiveItem
 ===============
 */
-void idPlayer::GiveItem( const char *itemname ) {
+void idPlayer::GiveItem(const char* itemname) {
 	idDict	args;
 
-	args.Set( "classname", itemname );
-	args.Set( "owner", name.c_str() );
-	args.Set( "givenToPlayer", va( "%d", entityNumber ) );
+	args.Set("classname", itemname);
+	args.Set("owner", name.c_str());
+	args.Set("givenToPlayer", va("%d", entityNumber));
 
-	if ( gameLocal.mpGame.IsBuyingAllowedInTheCurrentGameMode() ) {
+	if (gameLocal.mpGame.IsBuyingAllowedInTheCurrentGameMode()) {
 		// check if this is a weapon
-		if( !idStr::Icmpn( itemname, "weapon_", 7 ) ) {
-			int weaponIndex = SlotForWeapon( itemname );
-			if( weaponIndex >= 0 && weaponIndex < MAX_WEAPONS )
+		if (!idStr::Icmpn(itemname, "weapon_", 7)) {
+			int weaponIndex = SlotForWeapon(itemname);
+			if (weaponIndex >= 0 && weaponIndex < MAX_WEAPONS)
 			{
-				int weaponIndexBit = ( 1 << weaponIndex );
+				int weaponIndexBit = (1 << weaponIndex);
 				inventory.weapons |= weaponIndexBit;
 				inventory.carryOverWeapons |= weaponIndexBit;
 				carryOverCurrentWeapon = weaponIndex;
@@ -5424,22 +5446,25 @@ void idPlayer::GiveItem( const char *itemname ) {
 		}
 
 		// if the player is dead, credit him with this armor or ammo purchase
-		if ( health <= 0 ) {
-			if( !idStr::Icmp( itemname, "item_armor_small" ) ) {
+		if (health <= 0) {
+			if (!idStr::Icmp(itemname, "item_armor_small")) {
 				inventory.carryOverWeapons |= CARRYOVER_FLAG_ARMOR_LIGHT;
-			} else if( !idStr::Icmp( itemname, "item_armor_large" ) ) {
+			}
+			else if (!idStr::Icmp(itemname, "item_armor_large")) {
 				inventory.carryOverWeapons |= CARRYOVER_FLAG_ARMOR_HEAVY;
-			} else if( !idStr::Icmp( itemname, "ammorefill" ) ) {
+			}
+			else if (!idStr::Icmp(itemname, "ammorefill")) {
 				inventory.carryOverWeapons |= CARRYOVER_FLAG_AMMO;
 			}
-		} else {
-			if ( !idStr::Icmp( itemname, "ammorefill" ) ) {
+		}
+		else {
+			if (!idStr::Icmp(itemname, "ammorefill")) {
 				int i;
-				for ( i = 0 ; i < MAX_AMMOTYPES; i++ ) {
-					int a = gameLocal.mpGame.mpBuyingManager.GetIntValueForKey( rvWeapon::GetAmmoNameForIndex( i ), 0 );
-					inventory.ammo[i] += a; 
-					if ( inventory.ammo[i] > inventory.MaxAmmoForAmmoClass( this, rvWeapon::GetAmmoNameForIndex(i) ) ) {
-						inventory.ammo[i] = inventory.MaxAmmoForAmmoClass( this, rvWeapon::GetAmmoNameForIndex(i) );
+				for (i = 0; i < MAX_AMMOTYPES; i++) {
+					int a = gameLocal.mpGame.mpBuyingManager.GetIntValueForKey(rvWeapon::GetAmmoNameForIndex(i), 0);
+					inventory.ammo[i] += a;
+					if (inventory.ammo[i] > inventory.MaxAmmoForAmmoClass(this, rvWeapon::GetAmmoNameForIndex(i))) {
+						inventory.ammo[i] = inventory.MaxAmmoForAmmoClass(this, rvWeapon::GetAmmoNameForIndex(i));
 					}
 				}
 			}
@@ -5447,8 +5472,8 @@ void idPlayer::GiveItem( const char *itemname ) {
 	}
 
 	// spawn the item if the player is alive
-	if ( health > 0 && idStr::Icmp( itemname, "ammorefill" ) ) {
-		gameLocal.SpawnEntityDef( args );
+	if (health > 0 && idStr::Icmp(itemname, "ammorefill")) {
+		gameLocal.SpawnEntityDef(args);
 	}
 
 }
@@ -8483,11 +8508,14 @@ bool idPlayer::AttemptToBuyItem( const char* itemName )
 }
 
 bool idPlayer::CanBuy( void ) {
+	/*
 	bool ret = gameLocal.mpGame.IsBuyingAllowedRightNow();
 	if ( !ret ) {
 		return false;
 	}
 	return !spectating;
+	*/
+	return true; //Player can always buy
 }
 
 
@@ -9781,7 +9809,11 @@ void idPlayer::Think( void ) {
 
 	if (gameLocal.GetTime() > hideTime) //Hide new powerup gui
 	{
-		HideObjective();
+		if (newPowerup)	//Needed to prevent instantly hiding the start of game objective gui
+		{
+			newPowerup = false;
+			HideObjective();
+		}
 	}
 }
 

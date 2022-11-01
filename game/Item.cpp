@@ -788,6 +788,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		player->hasDoublePoints = true;
 		player->doublePointsEndTime = gameLocal.GetTime() + player->powerupDur;
 		player->hideTime = gameLocal.GetTime() + 3000;
+		player->newPowerup = true;
 	}
 	else if (rVal <= 4)
 	{
@@ -798,6 +799,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		player->hasInstaKill= true;
 		player->instaKillEndTime = gameLocal.GetTime() + player->powerupDur;
 		player->hideTime = gameLocal.GetTime() + 3000;
+		player->newPowerup = true;
 	}
 	else if (rVal <= 6)
 	{
@@ -807,6 +809,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		}
 		player->hasMaxAmmo = true;
 		player->hideTime = gameLocal.GetTime() + 3000;
+		player->newPowerup = true;
 	}
 	else if (rVal == 7)
 	{
@@ -816,6 +819,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		}
 		player->hasNuke = true;
 		player->hideTime = gameLocal.GetTime() + 3000;
+		player->newPowerup = true;
 	}
 	else if (rVal >= 8)
 	{
@@ -826,6 +830,7 @@ bool idItem::Pickup( idPlayer *player ) {
 		player->hasZombieBlood = true;
 		player->zombieBloodEndTime = gameLocal.GetTime() + player->zombieBloodDur;
 		player->hideTime = gameLocal.GetTime() + 3000;
+		player->newPowerup = true;
 	}
 
 	return true;
