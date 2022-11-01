@@ -1272,7 +1272,7 @@ void idAI::Think( void ) {
 		}
 		else //Player has insta-kill and not expired
 		{
-			Event_SetHealth(1);
+			Event_SetHealth(5);		//Set to 5 to prevent zombies from dying in vomit on ground, still die to 1 shot of every weapon
 		}
 	}
 
